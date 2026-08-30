@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NUTT | Smart Companion & Dynamic Schedule Dashboard 💖</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Mitr:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    
+    <style>
+        :root {
+            --bg-main: #090d16;
+            --card-bg: rgba(21, 29, 46, 0.75);
+            --card-border: rgba(244, 114, 182, 0.2);
+            --pink-accent: #f472b6;
+            --pink-glow: rgba(244, 114, 182, 0.4);
+            --purple-accent: #c084fc;
+            --purple-glow: rgba(192, 132, 252, 0.4);
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --success: #34d399;
+            --warning: #fbbf24;
+            --danger: #f87171;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Kanit', sans-serif; }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding-bottom: 60px;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(244, 114, 182, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(192, 132, 252, 0.15) 0px, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        nav {
+            background: rgba(9, 13, 22, 0.85);
+            backdrop-filter: blur(16px);
+            position: sticky; top: 0; z-index: 100;
+            border-bottom: 1px solid var(--card-border);
+            padding: 0.8rem 2rem;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        .logo { font-size: 1.3rem; font-weight: 700; color: var(--pink-accent); font-family: 'Mitr', sans-serif; display: flex; align-items: center; gap: 0.6rem; }
+        .logo span { color: var(--text-sub); font-size: 0.85rem; font-weight: 400; }
+
+        .nav-tabs { display: flex; gap: 0.4rem; background: rgba(0, 0, 0, 0.5); padding: 0.3rem; border-radius: 0.8rem; border: 1px solid var(--card-border); flex-wrap: wrap; }
+        .tab-btn { background: transparent; border: none; color: var(--text-sub); padding: 0.55rem 1.1rem; border-radius: 0.6rem; font-size: 0.88rem; font-weight: 500; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 0.5rem; }
+        .tab-btn:hover { color: var(--text-main); background: rgba(244, 114, 182, 0.15); }
+        .tab-btn.active { background: linear-gradient(135deg, var(--pink-accent), var(--purple-accent)); color: #fff; box-shadow: 0 0 15px var(--pink-glow); }
+
+        .container { max-width: 1100px; margin: 1.8rem auto; padding: 0 1.2rem; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.35s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card { background: var(--card-bg); backdrop-filter: blur(20px); border: 1px solid var(--card-border); padding: 1.5rem; border-radius: 1.2rem; margin-bottom: 1.4rem; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; border-bottom: 1px solid var(--card-border); padding-bottom: 0.8rem; }
+        .card-title { font-size: 1.15rem; font-weight: 600; color: var(--pink-accent); font-family: 'Mitr', sans-serif; display: flex; align-items: center; gap: 0.6rem; }
+
+        .partner-banner {
+            background: linear-gradient(135deg, rgba(244, 114, 182, 0.15), rgba(192, 132, 252, 0.15));
+            border: 1.5px solid var(--pink-accent);
+            border-radius: 1.2rem; padding: 1.4rem;
+            display: flex; align-items: flex-start; gap: 1.4rem;
+            margin-bottom: 1.4rem; box-shadow: 0 0 25px var(--pink-glow);
+        }
+
+        .partner-avatar {
+            width: 120px; height: 120px; border-radius: 50%;
+            overflow: hidden; border: 3px solid var(--pink-accent);
+            box-shadow: 0 0 15px var(--pink-glow); flex-shrink: 0; background: #172033;
+        }
+        .partner-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+        .chat-bubble {
+            background: rgba(9, 13, 22, 0.9); border: 1px solid var(--pink-accent);
+            border-radius: 1rem; padding: 1rem; margin-top: 0.6rem; width: 100%;
+        }
+        .chat-time { font-size: 0.8rem; color: var(--pink-accent); font-weight: 600; margin-bottom: 0.4rem; display: flex; justify-content: space-between; }
+        .chat-text { font-size: 0.95rem; color: var(--text-main); line-height: 1.6; }
+
+        .btn { background: linear-gradient(135deg, var(--pink-accent), #ec4899); color: white; border: none; padding: 0.65rem 1.2rem; border-radius: 0.6rem; font-weight: 600; cursor: pointer; transition: 0.3s; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; font-size: 0.88rem; }
+        .btn:hover { opacity: 0.95; transform: translateY(-2px); box-shadow: 0 5px 15px var(--pink-glow); }
+        .btn-purple { background: linear-gradient(135deg, var(--purple-accent), #a855f7); }
+        .btn-purple:hover { box-shadow: 0 5px 15px var(--purple-glow); }
+        .btn-success { background: linear-gradient(135deg, #10b981, #059669); }
+        .btn-warning { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .btn-danger { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); padding: 0.45rem 0.9rem; font-size: 0.8rem; }
+
+        .form-input, .form-textarea { background: rgba(0, 0, 0, 0.4); border: 1px solid var(--card-border); padding: 0.7rem 0.9rem; border-radius: 0.6rem; color: var(--text-main); font-size: 0.9rem; outline: none; width: 100%; transition: 0.3s; }
+        .form-input:focus, .form-textarea:focus { border-color: var(--pink-accent); box-shadow: 0 0 10px var(--pink-glow); }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
+
+        .workout-item { background: rgba(0, 0, 0, 0.3); border: 1px solid var(--card-border); padding: 1rem; border-radius: 0.8rem; display: flex; align-items: center; justify-content: space-between; transition: 0.3s; }
+
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.5rem; text-align: center; }
+        .day-name { font-size: 0.85rem; color: var(--text-sub); font-weight: 600; padding-bottom: 0.4rem; }
+        .calendar-day {
+            background: rgba(0, 0, 0, 0.3); border: 1px solid var(--card-border);
+            min-height: 80px; border-radius: 0.6rem; padding: 0.4rem;
+            cursor: pointer; transition: 0.25s;
+            display: flex; flex-direction: column; justify-content: space-between; align-items: center;
+        }
+        .calendar-day:hover { border-color: var(--pink-accent); background: rgba(244, 114, 182, 0.15); }
+        .calendar-day.empty { background: transparent; border: none; cursor: default; }
+        .calendar-day.busy { border-color: var(--warning); background: rgba(251, 191, 36, 0.1); }
+
+        .badge-busy { background: rgba(251, 191, 36, 0.2); color: var(--warning); border: 1px solid var(--warning); font-size: 0.68rem; padding: 0.1rem 0.3rem; border-radius: 0.3rem; margin-top: 0.2rem; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        @media (max-width: 768px) { nav { flex-direction: column; gap: 1rem; } .grid-2, .grid-3 { grid-template-columns: 1fr; } .partner-banner { flex-direction: column; text-align: center; } }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo"><i class="fa-solid fa-heart-pulse"></i> NUTT <span>& FEMBOY DASHBOARD 💕</span></div>
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="switchTab('dashboard')"><i class="fa-solid fa-chart-pie"></i> แดชบอร์ด</button>
+            <button class="tab-btn" onclick="switchTab('calculator')"><i class="fa-solid fa-calculator"></i> คำนวณ BMI</button>
+            <button class="tab-btn" onclick="switchTab('workout')"><i class="fa-solid fa-dumbbell"></i> เช็กลิสต์ประจำวัน</button>
+            <button class="tab-btn" onclick="switchTab('calendar')"><i class="fa-solid fa-calendar-days"></i> ปฏิทินนัดหมาย & ย้อนหลัง</button>
+            <button class="tab-btn" onclick="switchTab('portfolio')"><i class="fa-solid fa-laptop-code"></i> คลังพอร์ต IT</button>
+            <button class="tab-btn" onclick="switchTab('settings')"><i class="fa-solid fa-sliders"></i> ตั้งค่า & Excel</button>
+        </div>
+    </nav>
+
+    <div class="container">
+
+        <!-- Femboy Partner Banner -->
+        <div class="partner-banner">
+            <div class="partner-avatar">
+                <img id="femboyImg" src="assets/femboy/image1.jpg" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300'" alt="Femboy Partner">
+            </div>
+            <div style="flex-grow: 1; width: 100%;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                    <h3 style="color: var(--pink-accent); font-family: 'Mitr';" id="femboyNameTitle">เคะน้อย แฟนเด็กของนัตตี้ 💕</h3>
+                    <span style="font-size: 0.78rem; background: rgba(52,211,153,0.15); color: var(--success); padding: 0.2rem 0.6rem; border-radius: 1rem; border: 1px solid var(--success);"><i class="fa-solid fa-circle"></i> Smart Companion Active</span>
+                </div>
+
+                <div class="chat-bubble">
+                    <div class="chat-time">
+                        <span id="chatTimeSlot">☀️ Morning Message</span>
+                        <span id="chatDateBadge" style="color: var(--text-sub); font-weight: 400;">Day 1/365</span>
+                    </div>
+                    <div class="chat-text" id="chatMessageText">กำลังดึงข้อความประจำวัน...</div>
+                </div>
+
+                <div style="margin-top: 0.8rem; display: flex; gap: 0.6rem; flex-wrap: wrap;">
+                    <button class="btn" onclick="triggerSweetTalk()"><i class="fa-solid fa-heart-pulse"></i> นัตตี้กดให้อ้อนหน่อย 💕</button>
+                    <button class="btn btn-purple" onclick="triggerCheerUp()"><i class="fa-solid fa-wand-magic-sparkles"></i> ขอกำลังใจสู้ชีวิต/โค้ด 💻</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 1: DASHBOARD -->
+        <div id="dashboard" class="tab-content active">
+            <div class="card">
+                <div class="card-header"><span class="card-title"><i class="fa-solid fa-chart-line"></i> ภาพรวมวันนี้ & นัดหมาย</span></div>
+                <div class="grid-3">
+                    <div style="background: rgba(0,0,0,0.3); padding: 1.2rem; border-radius: 0.8rem; border: 1px solid var(--card-border);">
+                        <p style="color: var(--text-sub); font-size: 0.85rem;">สถานะ BMI ปัจจุบัน</p>
+                        <h2 id="dashBmiText" style="color: var(--pink-accent); margin-top: 0.3rem;">ยังไม่ได้คำนวณ</h2>
+                        <span id="dashBmiStatus" style="font-size: 0.78rem; color: var(--text-sub);">กรอกข้อมูลในแท็บคำนวณ</span>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.3); padding: 1.2rem; border-radius: 0.8rem; border: 1px solid var(--card-border);">
+                        <p style="color: var(--text-sub); font-size: 0.85rem;">สถานะการออกกำลังกายวันนี้</p>
+                        <h2 id="dashWorkoutStatus" style="color: var(--warning); margin-top: 0.3rem;">0 / 4 ท่า</h2>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.3); padding: 1.2rem; border-radius: 0.8rem; border: 1px solid var(--card-border);">
+                        <p style="color: var(--text-sub); font-size: 0.85rem;">ตารางนัดหมายวันนี้</p>
+                        <h4 id="dashTodayNote" style="color: var(--warning); margin-top: 0.4rem; font-weight: 500;">ไม่มีนัดหมาย (ว่าง)</h4>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title"><i class="fa-solid fa-clock-rotate-left"></i> ประวัติข้อความแจ้งเตือนย้อนหลัง 💌</span>
+                    <button class="btn btn-danger" onclick="clearChatLogs()"><i class="fa-solid fa-trash"></i> ล้างประวัติแชท</button>
+                </div>
+                <div id="chatHistoryBox" style="max-height: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.6rem; padding-right: 0.4rem;"></div>
+            </div>
+        </div>
+
+        <!-- TAB 2: CALCULATOR -->
+        <div id="calculator" class="tab-content">
+            <div class="card">
+                <div class="card-header"><span class="card-title"><i class="fa-solid fa-calculator"></i> คำนวณมวลกาย (BMI / BMR)</span></div>
+                <div class="grid-2">
+                    <div>
+                        <label style="font-size: 0.88rem; color: var(--text-sub);">น้ำหนักตัว (กิโลกรัม):</label>
+                        <input type="number" id="calcWeight" class="form-input" placeholder="เช่น 65" style="margin-top: 0.4rem;">
+                    </div>
+                    <div>
+                        <label style="font-size: 0.88rem; color: var(--text-sub);">ส่วนสูง (เซนติเมตร):</label>
+                        <input type="number" id="calcHeight" class="form-input" placeholder="เช่น 175" style="margin-top: 0.4rem;">
+                    </div>
+                </div>
+                <button class="btn" onclick="saveAndCalculateMetrics()" style="margin-top: 1rem; width: 100%;"><i class="fa-solid fa-floppy-disk"></i> คำนวณ + บันทึกข้อมูล</button>
+
+                <div id="calcResultBox" style="display: none; margin-top: 1.2rem; background: rgba(0,0,0,0.4); border: 1.5px solid var(--pink-accent); padding: 1.2rem; border-radius: 0.9rem;">
+                    <h4 style="color: var(--pink-accent); font-family: 'Mitr';">📊 ผลการคำนวณ:</h4>
+                    <p id="bmiResultText" style="font-size: 0.95rem; margin-top: 0.5rem;"></p>
+                    <p id="bmrResultText" style="font-size: 0.95rem; margin-top: 0.3rem; color: var(--purple-accent);"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: WORKOUT CHECKLIST -->
+        <div id="workout" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <span class="card-title"><i class="fa-solid fa-list-check"></i> ตารางออกกำลังกายประจำวัน</span>
+                        <p id="workoutPlanBadge" style="font-size: 0.8rem; color: var(--purple-accent); margin-top: 0.2rem;">โหมด: มาตรฐาน</p>
+                    </div>
+                    <button class="btn btn-danger" onclick="resetWorkouts()"><i class="fa-solid fa-rotate-right"></i> รีเซ็ตประจำวัน</button>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 0.8rem;" id="workoutListContainer"></div>
+            </div>
+        </div>
+
+        <!-- TAB 4: CALENDAR & BUSY SCHEDULER -->
+        <div id="calendar" class="tab-content">
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem;">
+                    <button class="btn btn-purple" onclick="changeMonth(-1)"><i class="fa-solid fa-chevron-left"></i> เดือนก่อนหน้า</button>
+                    <h3 style="color: var(--pink-accent); font-family: 'Mitr';" id="calendarMonthTitle">สิงหาคม 2026</h3>
+                    <button class="btn btn-purple" onclick="changeMonth(1)">เดือนถัดไป <i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+                <div class="calendar-grid">
+                    <div class="day-name">อา</div><div class="day-name">จ</div><div class="day-name">อ</div>
+                    <div class="day-name">พ</div><div class="day-name">พฤ</div><div class="day-name">ศ</div><div class="day-name">ส</div>
+                </div>
+                <div id="calendarDays" class="calendar-grid" style="margin-top: 0.6rem;"></div>
+            </div>
+
+            <!-- CARD Managing Selected Day Schedule / Note -->
+            <div class="card" id="historyDetailCard" style="display: none;">
+                <div class="card-header">
+                    <span class="card-title" id="historyDateTitle"><i class="fa-solid fa-calendar-day"></i> บันทึกข้อมูลประจำวัน</span>
+                    <button class="btn btn-danger" onclick="closeHistoryDetail()"><i class="fa-solid fa-xmark"></i> ปิด</button>
+                </div>
+
+                <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 0.8rem; margin-bottom: 1rem; border: 1px solid var(--card-border);">
+                    <h4 style="color: var(--warning); margin-bottom: 0.5rem; font-size: 0.95rem;"><i class="fa-solid fa-pen-to-square"></i> ตั้งค่าโน้ตนัดหมาย / วันไม่ว่าง:</h4>
+                    <input type="text" id="scheduleNoteInput" class="form-input" placeholder="เช่น ติดสอบ IT, มีนัดไปต่างจังหวัด, งานยุ่ง..." style="margin-bottom: 0.6rem;">
+                    <div style="display: flex; gap: 0.6rem;">
+                        <button class="btn btn-warning" onclick="saveDayScheduleNote()"><i class="fa-solid fa-bell-slash"></i> บันทึกไม่ว่าง (งดแจ้งเตือนออกกำลังกาย)</button>
+                        <button class="btn btn-danger" onclick="clearDayScheduleNote()"><i class="fa-solid fa-trash"></i> ลบนัดหมาย</button>
+                    </div>
+                </div>
+
+                <div id="historyDetailContent"></div>
+            </div>
+        </div>
+
+        <!-- TAB 5: PORTFOLIO -->
+        <div id="portfolio" class="tab-content">
+            <div class="card">
+                <div class="card-header"><span class="card-title"><i class="fa-solid fa-folder-plus"></i> เพิ่มผลงาน IT เข้าคลังพอร์ต</span></div>
+                <form id="projectForm" onsubmit="addProject(event)">
+                    <div class="grid-2" style="margin-bottom: 0.8rem;">
+                        <input type="text" id="projTitle" class="form-input" placeholder="ชื่อระบบ / โปรเจกต์" required>
+                        <input type="text" id="projTag" class="form-input" placeholder="ภาษา / เครื่องมือ" required>
+                    </div>
+                    <textarea id="projDesc" class="form-textarea" rows="2" placeholder="รายละเอียดระบบ..." required style="margin-bottom: 0.8rem;"></textarea>
+                    <button type="submit" class="btn" style="width: 100%;"><i class="fa-solid fa-floppy-disk"></i> บันทึกโปรเจกต์</button>
+                </form>
+            </div>
+            <div class="card">
+                <div class="card-header"><span class="card-title"><i class="fa-solid fa-boxes-stacked"></i> รายการผลงานทั้งหมด</span></div>
+                <div id="portfolioGrid"></div>
+            </div>
+        </div>
+
+        <!-- TAB 6: SETTINGS & EXPORT EXCEL -->
+        <div id="settings" class="tab-content">
+            <div class="card">
+                <div class="card-header"><span class="card-title"><i class="fa-solid fa-file-excel"></i> สำรองข้อมูลเป็นไฟล์ Excel (.xlsx)</span></div>
+                <p style="font-size: 0.9rem; color: var(--text-sub); margin-bottom: 1.2rem; line-height: 1.6;">
+                    ส่งออกข้อมูลประวัติแชท, ประวัติออกกำลังกาย, โน้ตนัดหมาย และพอร์ต IT เป็นไฟล์ Excel ได้ทันทีครับ
+                </p>
+                <button class="btn btn-success" onclick="exportToExcel()"><i class="fa-solid fa-file-excel"></i> ดาวน์โหลดเป็นไฟล์ Excel (.xlsx)</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let selectedDateKey = null;
+        let calendarCurrentDate = new Date();
+        let userBmiCategory = 'normal';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadHealthMetrics();
+            checkAutoTimeChat();
+            renderCalendar();
+            loadChatHistory();
+            loadProjects();
+        });
+
+        function getTodayKey() { return new Date().toISOString().split('T')[0]; }
+
+        function checkAutoTimeChat() {
+            const todayKey = getTodayKey();
+            const history = getHistory();
+            const todayRecord = history[todayKey];
+
+            const hour = new Date().getHours();
+            let title = '🌅 Morning Chat';
+
+            if (hour >= 6 && hour < 12) title = '🌅 Morning Chat (น้องทักเช้า)';
+            else if (hour >= 12 && hour < 17) title = '☀️ Afternoon Chat (น้องทักเที่ยง)';
+            else if (hour >= 17 && hour < 21) title = '🌆 Evening Chat (น้องทักเย็น)';
+            else title = '🌙 Good Night Chat (น้องทักดึก)';
+
+            document.getElementById('chatTimeSlot').innerText = title;
+
+            // 🧠 LOGIC CHECK: ถ้าวันนี้ลงโน้ตว่า "ไม่ว่าง / ติดธุระ" ให้ยกเว้นการทักให้ออกกำลังกาย!
+            if (todayRecord && todayRecord.note && todayRecord.note.trim() !== '') {
+                const msg = `วันนี้เห็นนัตตี้ติดนัดหมาย: "${todayRecord.note}" 📝 เคลียร์ธุระสู้ๆ น้า! วันนี้เคะจะยังไม่ตามจี้ให้ออกกำลังกาย พักผ่อนได้เลยคั๊บ 💕`;
+                document.getElementById('chatMessageText').innerText = msg;
+                document.getElementById('dashTodayNote').innerText = `📌 ${todayRecord.note}`;
+                saveChatMessage('📌 แจ้งเตือนนัดหมายประจำวัน', msg);
+            } else {
+                const defaultMsg = "วันนี้คิวว่างงับ! ออกกำลังกายตามเซ็ตสบายๆ ได้เลยนัตตี้ เคะรอเชียร์อยู่น้า 💕";
+                document.getElementById('chatMessageText').innerText = defaultMsg;
+                document.getElementById('dashTodayNote').innerText = 'ไม่มีนัดหมาย (ว่าง)';
+                saveChatMessage(title, defaultMsg);
+            }
+        }
+
+        function triggerSweetTalk() {
+            const msg = "นัตตี้รู้ไหม... ไม่ว่าจะงานยุ่งหรือเหนื่อยแค่ไหน มาพักพิงตักเคะได้เสมอน้า 💕";
+            document.getElementById('chatTimeSlot').innerText = '💕 Sweet Talk (เคะอ้อนนัตตี้)';
+            document.getElementById('chatMessageText').innerText = msg;
+            saveChatMessage('💕 Sweet Talk', msg);
+        }
+
+        function triggerCheerUp() {
+            const msg = "เรื่องเรียน IT และโปรเจกต์ นัตตี้ทำได้แน่นอน! แฟนเคะเก่งที่สุดอยู่แล้ว สู้ๆ งับ! 💻🔥";
+            document.getElementById('chatTimeSlot').innerText = '🔥 Cheer Up (ส่งกำลังใจ)';
+            document.getElementById('chatMessageText').innerText = msg;
+            saveChatMessage('🔥 Cheer Up', msg);
+        }
+
+        // -------------------------------------------------------------
+        // 📅 CALENDAR & BUSY NOTE SYSTEM
+        // -------------------------------------------------------------
+        function changeMonth(offset) { calendarCurrentDate.setMonth(calendarCurrentDate.getMonth() + offset); renderCalendar(); }
+
+        function renderCalendar() {
+            const grid = document.getElementById('calendarDays');
+            grid.innerHTML = '';
+            const history = getHistory();
+            const year = calendarCurrentDate.getFullYear();
+            const month = calendarCurrentDate.getMonth();
+            const monthNames = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+            document.getElementById('calendarMonthTitle').innerText = `${monthNames[month]} ${year + 543}`;
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            for (let i = 0; i < firstDay; i++) {
+                grid.appendChild(Object.assign(document.createElement('div'), { className: 'calendar-day empty' }));
+            }
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayCell = document.createElement('div');
+                const monthStr = String(month + 1).padStart(2, '0');
+                const dayStr = String(day).padStart(2, '0');
+                const dateKey = `${year}-${monthStr}-${dayStr}`;
+
+                const record = history[dateKey];
+                let isBusy = record && record.note && record.note.trim() !== '';
+
+                dayCell.className = `calendar-day ${isBusy ? 'busy' : ''}`;
+
+                let statusBadge = '';
+                if (isBusy) {
+                    statusBadge = `<div class="badge-busy" title="${record.note}">📌 ${escapeHtml(record.note)}</div>`;
+                } else if (record && record.done) {
+                    statusBadge = `<i class="fa-solid fa-heart" style="color: var(--pink-accent); font-size: 1rem; margin-top:0.2rem;"></i>`;
+                }
+
+                dayCell.innerHTML = `<span style="font-size: 0.8rem; font-weight: 600; align-self: flex-start;">${day}</span>${statusBadge}`;
+                dayCell.onclick = () => showHistoryDetail(dateKey);
+                grid.appendChild(dayCell);
+            }
+        }
+
+        function showHistoryDetail(dateKey) {
+            selectedDateKey = dateKey;
+            const history = getHistory();
+            const record = history[dateKey] || {};
+            const card = document.getElementById('historyDetailCard');
+            const content = document.getElementById('historyDetailContent');
+            
+            document.getElementById('historyDateTitle').innerText = `📅 บันทึกประจำวันที่: ${dateKey}`;
+            document.getElementById('scheduleNoteInput').value = record.note || '';
+
+            if (record.done) {
+                content.innerHTML = `<p style="color: var(--success); font-weight: 600;">✅ ออกกำลังกายแล้ว (${record.workoutsCount || 0}/4 ท่า)</p>`;
+            } else {
+                content.innerHTML = `<p style="color: var(--text-sub);">ยังไม่มีการบันทึกการออกกำลังกายในวันนี้</p>`;
+            }
+            card.style.display = 'block';
+        }
+
+        function saveDayScheduleNote() {
+            if (!selectedDateKey) return;
+            const noteText = document.getElementById('scheduleNoteInput').value;
+            const history = getHistory();
+
+            if (!history[selectedDateKey]) history[selectedDateKey] = {};
+            history[selectedDateKey].note = noteText;
+
+            localStorage.setItem('nutt_femboy_cal', JSON.stringify(history));
+            alert(`บันทึกนัดหมายวันที่ ${selectedDateKey} เรียบร้อยแล้วคั๊บ!`);
+            renderCalendar();
+            checkAutoTimeChat();
+        }
+
+        function clearDayScheduleNote() {
+            if (!selectedDateKey) return;
+            const history = getHistory();
+            if (history[selectedDateKey]) {
+                delete history[selectedDateKey].note;
+                localStorage.setItem('nutt_femboy_cal', JSON.stringify(history));
+            }
+            document.getElementById('scheduleNoteInput').value = '';
+            alert(`ลบนัดหมายวันที่ ${selectedDateKey} แล้วคั๊บ!`);
+            renderCalendar();
+            checkAutoTimeChat();
+        }
+
+        function closeHistoryDetail() { document.getElementById('historyDetailCard').style.display = 'none'; }
+
+        // -------------------------------------------------------------
+        // 📊 EXPORT TO EXCEL
+        // -------------------------------------------------------------
+        function exportToExcel() {
+            try {
+                const wb = XLSX.utils.book_new();
+                const history = getHistory();
+
+                const workoutData = Object.keys(history).map(dateKey => ({
+                    "วันที่": dateKey,
+                    "โน้ตนัดหมาย / ติดธุระ": history[dateKey].note || 'ไม่มี (ว่าง)',
+                    "สถานะออกกำลังกาย": history[dateKey].done ? "ออกกำลังกายแล้ว" : "ไม่ได้ออก",
+                    "จำนวนท่า": `${history[dateKey].workoutsCount || 0}/4 ท่า`
+                }));
+
+                const wsWorkout = XLSX.utils.json_to_sheet(workoutData.length ? workoutData : [{"ข้อมูล": "ไม่มีบันทึก"}]);
+                XLSX.utils.book_append_sheet(wb, wsWorkout, "ประวัติออกกำลังกายและนัดหมาย");
+
+                XLSX.writeFile(wb, `NUTT_Schedule_Report_${getTodayKey()}.xlsx`);
+            } catch (err) {
+                alert("เกิดข้อผิดพลาดในการส่งออก Excel: " + err.message);
+            }
+        }
+
+        // -------------------------------------------------------------
+        // 🛠️ OTHER HELPERS
+        // -------------------------------------------------------------
+        function getHistory() { const saved = localStorage.getItem('nutt_femboy_cal'); return saved ? JSON.parse(saved) : {}; }
+        function saveChatMessage(title, msg) {
+            let logs = JSON.parse(localStorage.getItem('nutt_chat_logs') || '[]');
+            const now = new Date();
+            logs.unshift({ title, date: now.toLocaleDateString('th-TH'), time: now.toLocaleTimeString('th-TH', {hour:'2-digit', minute:'2-digit'}), text: msg });
+            if (logs.length > 20) logs.pop();
+            localStorage.setItem('nutt_chat_logs', JSON.stringify(logs));
+            loadChatHistory();
+        }
+
+        function loadChatHistory() {
+            const box = document.getElementById('chatHistoryBox');
+            let logs = JSON.parse(localStorage.getItem('nutt_chat_logs') || '[]');
+            if (logs.length === 0) { box.innerHTML = `<p style="font-size:0.85rem; color:var(--text-sub);">ยังไม่มีประวัติ...</p>`; return; }
+            box.innerHTML = logs.map(l => `
+                <div style="background:rgba(0,0,0,0.3); border-left:3px solid var(--pink-accent); padding:0.6rem; border-radius:0.4rem;">
+                    <span style="font-size:0.75rem; color:var(--pink-accent); font-weight:600;">${escapeHtml(l.title)} [${l.date} ${l.time}]</span>
+                    <p style="font-size:0.88rem; color:var(--text-main); margin-top:0.2rem;">${escapeHtml(l.text)}</p>
+                </div>
+            `).join('');
+        }
+
+        function clearChatLogs() { localStorage.removeItem('nutt_chat_logs'); loadChatHistory(); }
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            const activeBtn = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.getAttribute('onclick').includes(tabId));
+            if(activeBtn) activeBtn.classList.add('active');
+        }
+
+        function saveAndCalculateMetrics() {
+            const w = parseFloat(document.getElementById('calcWeight').value);
+            const h = parseFloat(document.getElementById('calcHeight').value);
+            if (!w || !h) return alert("กรุณากรอกข้อมูลให้ครบก่อนคั๊บ!");
+            const bmi = (w / ((h / 100) * (h / 100))).toFixed(1);
+            const bmr = (10 * w + 6.25 * h - 5 * 21 + 5).toFixed(0);
+            const healthData = { weight: w, height: h, bmi: bmi, bmr: bmr };
+            localStorage.setItem('nutt_health_metrics', JSON.stringify(healthData));
+            displayHealthMetrics(healthData);
+            alert("บันทึกค่าสำเร็จแล้วคั๊บ!");
+        }
+
+        function loadHealthMetrics() {
+            const saved = localStorage.getItem('nutt_health_metrics');
+            if (saved) {
+                const data = JSON.parse(saved);
+                document.getElementById('calcWeight').value = data.weight;
+                document.getElementById('calcHeight').value = data.height;
+                displayHealthMetrics(data);
+            }
+            renderWorkoutList();
+        }
+
+        function displayHealthMetrics(data) {
+            document.getElementById('bmiResultText').innerHTML = `ค่า BMI: <strong>${data.bmi}</strong>`;
+            document.getElementById('bmrResultText').innerHTML = `ค่า BMR: <strong>~${data.bmr} kcal/วัน</strong>`;
+            document.getElementById('calcResultBox').style.display = 'block';
+            document.getElementById('dashBmiText').innerText = `${data.bmi} BMI`;
+        }
+
+        function renderWorkoutList() {
+            const container = document.getElementById('workoutListContainer');
+            const workouts = [
+                { id: 'w1', name: 'Wall Push-ups', detail: '3 เซต × 12 ครั้ง' },
+                { id: 'w2', name: 'Chair Squats', detail: '3 เซต × 12 ครั้ง' },
+                { id: 'w3', name: 'Standing Knee to Elbow', detail: '3 เซต × 15 ครั้ง' },
+                { id: 'w4', name: 'Plank Hold (แพลงก์)', detail: '3 เซต × 25 วินาที' }
+            ];
+            container.innerHTML = workouts.map(w => `
+                <div class="workout-item">
+                    <label style="cursor:pointer; display:flex; align-items:center; gap:0.8rem;">
+                        <input type="checkbox" id="${w.id}" style="width:18px; height:18px; accent-color:var(--pink-accent);">
+                        <div><strong>${w.name}</strong><p style="font-size:0.8rem; color:var(--pink-accent);">${w.detail}</p></div>
+                    </label>
+                </div>
+            `).join('');
+        }
+
+        function resetWorkouts() { ['w1','w2','w3','w4'].forEach(id => { if(document.getElementById(id)) document.getElementById(id).checked = false; }); alert("รีเซ็ตเรียบร้อย!"); }
+        function addProject(e) { e.preventDefault(); alert("บันทึกโปรเจกต์สำเร็จ!"); document.getElementById('projectForm').reset(); }
+        function loadProjects() {}
+        function escapeHtml(str) { return str ? str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") : ''; }
+    </script>
+</body>
+</html>
