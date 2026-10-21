@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minecraft Bedrock - Universal Add-on Editor Pro v3.2 (Cafe Bunny Edition)</title>
+
+    <link rel="icon" href="https://media.discordapp.net/attachments/1283550912240943116/1286293143519625227/a1b95347-2363-4d8b-8dfe-e79787d846a4.gif?ex=6ad8a6d7&is=6ad75557&hm=3d7dd724463a35afce4d33c53e72dd2d299f7e0543887787bde2542167133c56&=&width=384&height=384" type="image/png">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <style>
+        /* 🐰 🦖 Cafe Bunny Theme Colors */
+        :root { 
+            --bg: #fdf6f0;               
+            --card: #ffffff;             
+            --sub-card: #f7f1eb;         
+            --text-main: #4a3e3d;        
+            --text-sub: #8a7674;         
+            --accent-pink: #ffb7b2;      
+            --accent-green: #b5e2b8;     
+            --accent-dino-dark: #6fa073; 
+            --btn-delete: #ff8b94;       
+            --border-color: #ebdcd0;     
+            --warning-bg: #fff1e6;
+            --warning-border: #f4a261;
+            --warning-text: #e76f51;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, 'ChulaCharasNew', sans-serif; 
+            background: var(--bg); 
+            color: var(--text-main); 
+            padding: 15px; 
+            margin: 0; 
+            line-height: 1.5;
+        }
+
+        /* 🔒 Copyright Top Banner */
+        .copyright-banner {
+            background: var(--warning-bg);
+            border: 2px solid var(--warning-border);
+            color: var(--warning-text);
+            padding: 12px 20px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+            font-size: 13.5px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-sizing: border-box;
+        }
+
+        .container { 
+            max-width: 1200px; 
+            margin: auto; 
+            background: var(--card); 
+            padding: 25px; 
+            border-radius: 24px; 
+            box-shadow: 0 10px 30px rgba(138, 118, 116, 0.1); 
+        }
+
+        .header-section {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px dashed var(--border-color);
+        }
+        
+        h1 { 
+            color: var(--text-main); 
+            margin: 0 0 10px 0; 
+            font-size: 26px; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .subtitle {
+            font-size: 14px; 
+            color: var(--text-sub); 
+            margin: 0;
+        }
+
+        .setting-panel { 
+            background: var(--sub-card); 
+            padding: 20px; 
+            border-radius: 18px; 
+            margin-bottom: 25px; 
+            border: 2px solid var(--border-color); 
+        }
+        
+        .setting-panel h3 { 
+            margin-top: 0; 
+            margin-bottom: 15px;
+            color: var(--text-main); 
+            font-size: 16px; 
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .setting-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); 
+            gap: 15px; 
+        }
+
+        label {
+            font-size: 13px; 
+            color: var(--text-main); 
+            font-weight: 600;
+            display: block; 
+            margin-bottom: 6px;
+        }
+
+        input[type="text"], select { 
+            background: var(--card); 
+            border: 2px solid var(--border-color); 
+            color: var(--text-main); 
+            padding: 10px 12px; 
+            border-radius: 12px; 
+            width: 100%; 
+            box-sizing: border-box; 
+            font-size: 14px; 
+            transition: all 0.2s ease;
+        }
+        
+        input[type="text"]:focus, select:focus { 
+            border-color: var(--accent-dino-dark); 
+            outline: none; 
+            box-shadow: 0 0 0 3px rgba(181, 226, 184, 0.4);
+        }
+
+        input[type="file"] {
+            background: var(--card); 
+            color: var(--text-main); 
+            padding: 8px; 
+            border-radius: 12px; 
+            border: 2px solid var(--border-color);
+            width: 100%; 
+            box-sizing: border-box;
+            font-size: 13px;
+        }
+
+        .controls { 
+            display: flex; 
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px; 
+            background: var(--sub-card); 
+            padding: 15px 20px; 
+            border-radius: 16px; 
+        }
+
+        .btn { 
+            padding: 12px 20px; 
+            border: none; 
+            border-radius: 14px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            transition: all 0.2s ease; 
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center;
+            gap: 8px; 
+            font-size: 14px; 
+        }
+        
+        .btn-add { 
+            background: var(--accent-green); 
+            color: #2b4c2e; 
+        }
+        
+        .btn-gen { 
+            background: var(--accent-pink); 
+            color: #5e3331; 
+            width: 100%; 
+            font-size: 16px; 
+            margin-top: 25px; 
+            padding: 16px; 
+            border-radius: 16px; 
+            box-shadow: 0 4px 12px rgba(255, 183, 178, 0.3);
+        }
+        
+        .btn:hover { 
+            transform: translateY(-2px); 
+            filter: brightness(0.95);
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            border-radius: 16px;
+            border: 2px solid var(--border-color);
+        }
+
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            background: var(--card); 
+            text-align: left;
+        }
+        
+        th { 
+            background: #f0e2d5; 
+            color: var(--text-main); 
+            padding: 16px 12px; 
+            font-size: 13px; 
+        }
+        
+        td { 
+            padding: 12px; 
+            border-bottom: 2px solid var(--bg); 
+            vertical-align: middle; 
+        }
+
+        .badge { 
+            background: #dfc8b3; 
+            padding: 4px 8px; 
+            border-radius: 6px; 
+            font-size: 11px; 
+            font-weight: bold; 
+            color: var(--text-main); 
+        }
+        
+        .badge-rp {  background: #cbdcf7; color: #2c3e50; }
+
+        .remove-btn { 
+            color: var(--btn-delete); 
+            cursor: pointer; 
+            font-size: 20px; 
+            font-weight: bold; 
+            padding: 5px 10px;
+        }
+
+        /* 🔒 Copyright Modal Style Popup */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(74, 62, 61, 0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .modal-box {
+            background: var(--card);
+            max-width: 600px;
+            width: 100%;
+            border-radius: 24px;
+            padding: 25px;
+            border: 3px solid var(--warning-border);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            box-sizing: border-box;
+        }
+        .modal-title {
+            color: var(--warning-text);
+            font-size: 20px;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+        .modal-content {
+            font-size: 13.5px;
+            max-height: 250px;
+            overflow-y: auto;
+            background: #faf6f2;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            color: #555;
+            white-space: pre-wrap;
+            margin: 15px 0;
+        }
+        .modal-checkbox-area {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 20px;
+            font-size: 13.5px;
+            font-weight: bold;
+        }
+        .modal-checkbox-area input {
+            margin-top: 4px;
+            transform: scale(1.2);
+        }
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        .btn-close-modal { background: #dfdfdf; color: #555; }
+        .btn-confirm-download { background: var(--warning-text); color: white; }
+        .btn-confirm-download:disabled { background: #ccc; cursor: not-allowed; }
+
+        @media (min-width: 768px) {
+            .controls { flex-direction: row; justify-content: space-between; align-items: center; }
+        }
+
+        @media (max-width: 992px) {
+            table, thead, tbody, th, td, tr { display: block; }
+            thead { display: none; }
+            tr { background: var(--card); border: 2px solid var(--border-color); border-radius: 16px; margin-bottom: 15px; padding: 15px; position: relative; }
+            td { border-bottom: none; padding: 8px 0; display: flex; flex-direction: column; align-items: flex-start; width: 100% !important; }
+            td::before { content: attr(data-label); font-weight: bold; font-size: 12px; color: var(--text-sub); margin-bottom: 4px; text-transform: uppercase; }
+            td input[type="text"], td select, td input[type="file"] { width: 100%; }
+            td:last-child { position: absolute; top: 10px; right: 10px; width: auto !important; padding: 0; }
+            td:last-child::before { display: none; }
+        }
+    
+/* ==================== ITEM PAIRING SYSTEM ==================== */
+.pairing-panel{margin:20px 0;padding:18px;background:var(--sub-card);border:2px solid var(--border-color);border-radius:18px}
+.pairing-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.pairing-title{margin:0;font-size:16px}.pairing-desc{margin:4px 0 0;color:var(--text-sub);font-size:13px}
+.pairing-actions{display:flex;gap:8px;flex-wrap:wrap}
+.pair-btn{border:0;border-radius:11px;padding:9px 13px;cursor:pointer;font-weight:700}
+.pair-btn-create{background:var(--accent-green);color:#2b4c2e}.pair-btn-clear{background:#eee2d9;color:var(--text-main)}
+.pair-btn-delete{background:#ffe0e3;color:#9a3c48}.pair-btn-rename{background:#dce7ff;color:#3c4d78}
+.pair-groups{display:grid;gap:10px}.pair-group{background:var(--card);border:2px solid var(--border-color);border-radius:14px;padding:12px}
+.pair-group-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.pair-group-name{font-weight:800}.pair-group-meta{color:var(--text-sub);font-size:12px}
+.pair-group-items{display:flex;flex-wrap:wrap;gap:7px}.pair-chip{background:#f8f1eb;border:1px solid var(--border-color);border-radius:9px;padding:6px 9px;font-size:12px}
+.pair-empty{padding:12px;color:var(--text-sub);text-align:center;border:1px dashed var(--border-color);border-radius:12px;font-size:13px}
+.pair-check{transform:scale(1.15);cursor:pointer}.pair-check:disabled{cursor:not-allowed;opacity:.45}.pair-selected{background:#effaf0!important}
+
+    
+.download-mode-area {
+    margin: 16px 0;
+    padding: 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    background: #fffaf7;
+}
+.download-mode-title {
+    font-weight: 800;
+    margin-bottom: 4px;
+    font-size: 15px;
+}
+.download-mode-help {
+    margin: 0 0 10px;
+    color: var(--text-sub);
+    font-size: 12.5px;
+}
+.download-mode-options {
+    display: grid;
+    gap: 9px;
+}
+.download-mode-option {
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    padding:12px 13px;
+    border:1px solid var(--border-color);
+    border-radius:12px;
+    cursor:pointer;
+    background:#fff;
+    transition: all .18s ease;
+}
+.download-mode-option:hover {
+    border-color: var(--accent-dino-dark);
+    transform: translateY(-1px);
+}
+.download-mode-option:has(input:checked) {
+    border-color: var(--accent-dino-dark);
+    background: #f5fbf5;
+    box-shadow: 0 3px 10px rgba(111,160,115,.10);
+}
+.download-mode-option input {
+    margin-top:4px;
+    accent-color: var(--accent-dino-dark);
+}
+.download-mode-option span {
+    display:flex;
+    flex-direction:column;
+    gap:3px;
+    min-width:0;
+}
+.download-mode-option strong {
+    font-size: 13.5px;
+}
+.download-mode-option small {
+    color:var(--text-sub);
+    line-height:1.4;
+    font-size: 12px;
+}
+</style>
+</head>
+<body>
+
+<div class="copyright-banner">
+    <span>🔒</span>
+    <div>
+        <strong>ประกาศลิขสิทธิ์ / Copyright Notice:</strong> ระบบ โค้ด และไฟล์ผลงานทั้งหมด ได้รับการคุ้มครองตาม พ.ศ. 2537 โดย <strong>© 2026 Nuttsumechan</strong> ห้ามมิให้ทำการคัดลอก ดัดแปลง แก้ไข หรือแจกจ่ายโดยมิได้รับอนุญาต
+    </div>
+
+    <form action="about.html">
+                <button type="submit" class="btn-cn">
+                    <span>← ย้อนกลับ</span>
+                </button>
+            </form>
+            
+</div>
+
+<div class="container">
+    <div class="header-section">
+        <h1>🐰ᩚ‧₊˚ 𝐂𝐚𝐟𝐞 𝐁𝐮่น𝐧𝐲 ‧₊˚ ☁⋅♡</h1>
+        <p class="subtitle">ระบบ Universal Add-on Editor Pro v3.2 | ตกแต่งและจัดการข้อมูลโปรเจกต์แอดออนอย่างง่ายดาย</p>
+    </div>
+
+    <div class="setting-panel">
+        <h3>⚙️ การตั้งค่าข้อมูลโปรเจกต์ (Project Config)</h3>
+        <div class="setting-grid">
+            <div>
+                <label>ชื่อในเกม (In-Game Pack Name)</label>
+                <input type="text" id="addonName" value="cafebunny">
+            </div>
+            <div>
+                <label>คำอธิบายแอดออน (Description)</label>
+                <input type="text" id="addonDesc" value="§6 ร้าน  Cafe Bunny §l มาหาเราได้ที่ Discord https://discord.gg/AJTSE8YXpB">
+            </div>
+            <div>
+                <label>คำนำหน้าไอดี (Namespace)</label>
+                <input type="text" id="addonNamespace" value="cafebunny">
+            </div>
+            <div>
+                <label>รูปไอคอนปกแอดออน (Pack Icon PNG)</label>
+                <input type="file" id="addonIcon" accept="image/png">
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button class="btn btn-add" onclick="addItemRow()">➕ เพิ่มไอเทมใหม่ (Add Item)</button>
+        <div style="display: flex; gap: 10px; align-items: center; font-size: 14px;">
+            <span>ความละเอียดไอคอน:</span> 
+            <select id="globalSize" style="width: auto; padding: 6px 12px;">
+                <option value="16">16 x 16 (Pixel)</option>
+                <option value="32" selected>32 x 32 (HD)</option>
+                <option value="64">64 x 64 (Ultra)</option>
+            </select>
+        </div>
+    </div>
+
+
+    <div class="pairing-panel">
+        <div class="pairing-head">
+            <div>
+                <h3 class="pairing-title">🔗 ระบบจับคู่สกิน / แบ่ง Add-on</h3>
+                <p class="pairing-desc">ติ๊กไอเทมที่ต้องการให้อยู่ Add-on เดียวกัน แล้วกด “สร้างกลุ่มจับคู่” ไอเทมที่ไม่ได้จับคู่จะเป็น Add-on เดี่ยวอัตโนมัติ</p>
+            </div>
+            <div class="pairing-actions">
+                <button class="pair-btn pair-btn-create" type="button" onclick="createPairGroup()">🔗 สร้างกลุ่มจากที่ติ๊ก</button>
+                <button class="pair-btn pair-btn-clear" type="button" onclick="clearPairSelection()">ยกเลิกการติ๊ก</button>
+            </div>
+        </div>
+        <div id="pairGroups" class="pair-groups"></div>
+    </div>
+
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th width="5%" style="text-align:center;">🔗</th>
+                    <th width="13%">ไอดีไอเทม (ID)</th>
+                    <th width="16%">ชื่อที่แสดงในเกม</th>
+                    <th width="18%">ประเภท / สล็อต (Slot)</th>
+                    <th width="16%">รูปแบบแอนิเมชัน</th>
+                    <th width="16%">ส่วนประกอบโมเดล (Parts)</th>
+                    <th width="10%"><span class="badge badge-rp">RP</span> ไอคอน</th>
+                    <th width="10%"><span class="badge badge-rp">RP</span> สกินโมเดล</th>
+                    <th width="4%" style="text-align:center;">ลบ</th>
+                </tr>
+            </thead>
+            <tbody id="itemTableBody"></tbody>
+        </table>
+    </div>
+
+    <button class="btn btn-gen" onclick="openCopyrightModal()">📦 แยกไฟล์ BP/RP และดาวน์โหลดโครงการ (ZIP)</button>
+</div>
+
+<div class="modal-overlay" id="copyrightModal">
+    <div class="modal-box">
+        <h3 class="modal-title">🔒 เงื่อนไขสิทธิ์และข้อตกลงการใช้งาน (Copyright Agreement)</h3>
+        <div class="modal-content" id="modalText"></div>
+        <div class="download-mode-area">
+            <div class="download-mode-title">📦 เลือกรูปแบบการดาวน์โหลด</div>
+            <p class="download-mode-help">เลือกได้ 1 รูปแบบ หรือเลือก “ทั้ง 2 แบบ” เพื่อรับไฟล์แยกและไฟล์รวมพร้อมกัน</p>
+
+            <div class="download-mode-options">
+                <label class="download-mode-option">
+                    <input type="radio" name="downloadMode" value="paired" checked>
+                    <span>
+                        <strong>📂 แบบแยกตามการจับคู่</strong>
+                        <small>กลุ่มที่จับคู่ = 1 Add-on และสกินที่ไม่จับคู่ = 1 Add-on ต่อ 1 สกิน</small>
+                    </span>
+                </label>
+
+                <label class="download-mode-option">
+                    <input type="radio" name="downloadMode" value="combined">
+                    <span>
+                        <strong>📦 แบบรวมทั้งหมด</strong>
+                        <small>ทุกสกินรวมเป็น Add-on เดียว โดยไม่สนใจว่าจับคู่ไว้หรือไม่</small>
+                    </span>
+                </label>
+
+                <label class="download-mode-option">
+                    <input type="radio" name="downloadMode" value="both">
+                    <span>
+                        <strong>📚 ดาวน์โหลดทั้ง 2 แบบ</strong>
+                        <small>สร้างไฟล์ ZIP แบบแยกตามการจับคู่ และไฟล์ ZIP แบบรวมทั้งหมดให้ครบทั้งสองรูปแบบ</small>
+                    </span>
+                </label>
+            </div>
+        </div>
+        <div class="modal-checkbox-area">
+            <input type="checkbox" id="agreeCheckbox" onchange="toggleDownloadBtn(this)">
+            <label for="agreeCheckbox">ฉันได้อ่าน รับทราบ และขอยอมรับเงื่อนไขลิขสิทธิ์ทั้งหมดของท่าน Nuttsumechan และจะไม่นำแอดออนนี้ไปดัดแปลง คัดลอก หรือจำหน่ายแจกจ่ายต่อในทางที่ผิด</label>
+        </div>
+        <div class="modal-buttons">
+            <button class="btn btn-close-modal" onclick="closeCopyrightModal()">ยกเลิก (Cancel)</button>
+            <button class="btn btn-confirm-download" id="confirmDownloadBtn" onclick="processDownload()" disabled>ยอมรับและดาวน์โหลด (Accept & Download)</button>
+        </div>
+    </div>
+</div>
+
+<script>
+let itemCount = 0;
+
+// ข้อความลิขสิทธิ์สำหรับแสดงบนหน้าต่างเว็บแบบเต็มระบบ ทั้งไทยและอังกฤษ
+const copyrightText = `// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//        COPYRIGHT NOTICE / ประกาศลิขสิทธิ์
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// © 2026 Nuttsumechan. All Rights Reserved.
+//
+// [TH] ห้ามคัดลอก ดัดแปลง แก้ไข เผยแพร่ หรือแจกจ่ายไม่ว่ากรณีใดๆ 
+// โดยไม่ได้รับอนุญาตเป็นลายลักษณ์อักษรจากเจ้าของผลงาน 
+// การฝ่าฝืนจะถูกดำเนินคดีตาม พ.ร.บ. ลิขสิทธิ์ พ.ศ. 2537 ถึงที่สุด
+//
+// [EN] Unauthorized copying, modification, reproduction, distribution,
+// or redistribution, in whole or in part, is strictly prohibited 
+// without prior written consent from the copyright holder.`;
+
+document.getElementById('modalText').innerText = copyrightText;
+
+// ฟังก์ชันสร้างสตริงสำหรับฝังลงในหัวไฟล์ JSON / LANG ทุกไฟล์
+function getInjectCopyrightComment(isLangFile = false) {
+    const symbol = isLangFile ? "##" : "//";
+    return `${symbol} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+           `${symbol} 🔒 COPYRIGHT NOTICE / ประกาศลิขสิทธิ์\n` +
+           `${symbol} © 2026 Nuttsumechan. All Rights Reserved.\n` +
+           `${symbol} [TH] ห้ามมิให้ทำซ้ำ คัดลอก ดัดแปลง สคริปต์หรือเนื้อหาใดๆ ในไฟล์นี้ทุกกรณี\n` +
+           `${symbol} [EN] Strictly prohibited from copying or modifying scripts in this file.\n` +
+           `${symbol} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+}
+
+// ฟังก์ชันแปลง Object เป็น JSON String พร้อมแทรกคอมเมนต์ลิขสิทธิ์ไว้บรรทัดแรกสุด
+function stringifyJsonWithCopyright(jsonObject) {
+    const jsonString = JSON.stringify(jsonObject, null, 2);
+    return getInjectCopyrightComment(false) + jsonString;
+}
+
+function openCopyrightModal() {
+    const rows = document.querySelectorAll('#itemTableBody tr');
+    if (rows.length === 0) return alert("กรุณาเพิ่มไอเทมในตารางอย่างน้อย 1 รายการก่อนครับ!");
+    document.getElementById('agreeCheckbox').checked = false;
+    const pairedMode = document.querySelector('input[name="downloadMode"][value="paired"]');
+    if (pairedMode) pairedMode.checked = true;
+    document.getElementById('confirmDownloadBtn').disabled = true;
+    document.getElementById('copyrightModal').style.display = 'flex';
+}
+
+function closeCopyrightModal() {
+    document.getElementById('copyrightModal').style.display = 'none';
+}
+
+function toggleDownloadBtn(checkbox) {
+    document.getElementById('confirmDownloadBtn').disabled = !checkbox.checked;
+}
+
+function handleModelPartChange(selectElement) {
+    const row = selectElement.closest('tr');
+    const modelTypeSelect = row.querySelector('.model-type');
+    if (selectElement.value === "body_no_head") {
+        modelTypeSelect.value = "static";
+    }
+}
+
+
+/* ==================== ITEM PAIRING SYSTEM ==================== */
+let pairGroups = [];
+let pairGroupCount = 0;
+
+function getItemRows(){return Array.from(document.querySelectorAll('#itemTableBody tr'));}
+function getRowItemId(row){const input=row.querySelector('.item-id');return input?input.value.trim():'';}
+function getRowItemName(row){const input=row.querySelector('.item-name');return input?input.value.trim():'';}
+
+function createPairGroup(){
+    const selectedRows=getItemRows().filter(row=>{
+        const cb=row.querySelector('.pair-check');
+        return cb && cb.checked;
+    });
+    if(selectedRows.length<2){alert('กรุณาติ๊กอย่างน้อย 2 ไอเทมเพื่อสร้างกลุ่มจับคู่');return;}
+    const ids=selectedRows.map(getRowItemId).filter(Boolean);
+    if(ids.length<2){alert('ไอเทมที่เลือกต้องมี ID');return;}
+    const already=ids.filter(id=>pairGroups.some(g=>g.items.includes(id)));
+    if(already.length){alert('ไอเทมบางรายการถูกจับคู่ไว้แล้ว:\n\n'+already.join('\n')+'\n\nกรุณายกเลิกกลุ่มเดิมก่อน');return;}
+    const name=prompt('ตั้งชื่อกลุ่ม Add-on นี้\nเช่น Set_A, Bunny_Head_And_Body',`Pair ${pairGroupCount+1}`);
+    if(name===null)return;
+    const clean=name.trim();
+    if(!clean){alert('กรุณาระบุชื่อกลุ่ม');return;}
+    pairGroups.push({id:`pair_${Date.now()}_${pairGroupCount}`,name:clean,items:ids});
+    pairGroupCount++;
+    clearPairSelection();
+    renderPairGroups();
+}
+
+function removePairGroup(groupId){
+    const group=pairGroups.find(g=>g.id===groupId);if(!group)return;
+    if(!confirm(`ลบกลุ่ม "${group.name}" ใช่หรือไม่?\nไอเทมจะไม่ถูกลบ และจะกลับไปเป็น Add-on เดี่ยว`))return;
+    pairGroups=pairGroups.filter(g=>g.id!==groupId);renderPairGroups();
+}
+function renamePairGroup(groupId){
+    const group=pairGroups.find(g=>g.id===groupId);if(!group)return;
+    const name=prompt('ชื่อใหม่ของกลุ่ม',group.name);if(name===null)return;
+    const clean=name.trim();if(!clean)return;group.name=clean;renderPairGroups();
+}
+function clearPairSelection(){
+    getItemRows().forEach(row=>{
+        const cb=row.querySelector('.pair-check');if(cb)cb.checked=false;
+        row.classList.remove('pair-selected');
+    });
+}
+function removeItemFromPairGroup(itemId){
+    pairGroups.forEach(g=>g.items=g.items.filter(id=>id!==itemId));
+    pairGroups=pairGroups.filter(g=>g.items.length>=2);
+}
+function renderPairGroups(){
+    const container=document.getElementById('pairGroups');if(!container)return;
+    const rows=getItemRows();
+    const ids=new Set(rows.map(getRowItemId).filter(Boolean));
+    pairGroups.forEach(g=>g.items=g.items.filter(id=>ids.has(id)));
+    pairGroups=pairGroups.filter(g=>g.items.length>=2);
+
+    const groupedIds=new Set(pairGroups.flatMap(g=>g.items));
+    rows.forEach(row=>{
+        const id=getRowItemId(row),cb=row.querySelector('.pair-check');
+        if(cb){
+            cb.disabled=!!id&&groupedIds.has(id);
+            if(cb.disabled)cb.checked=false;
+        }
+    });
+
+    if(!pairGroups.length){
+        container.innerHTML='<div class="pair-empty">ยังไม่มีการจับคู่ — ไอเทมที่ไม่ได้อยู่ในกลุ่มจะถูก Export เป็น Add-on เดี่ยวโดยอัตโนมัติ</div>';
+        return;
+    }
+    container.innerHTML=pairGroups.map(g=>{
+        const chips=g.items.map(id=>{
+            const row=rows.find(r=>getRowItemId(r)===id);
+            const name=row?getRowItemName(row):id;
+            return `<span class="pair-chip">${escapeHtml(name||id)} <small>(${escapeHtml(id)})</small></span>`;
+        }).join('');
+        return `<div class="pair-group">
+            <div class="pair-group-head">
+                <div><div class="pair-group-name">🔗 ${escapeHtml(g.name)}</div>
+                <div class="pair-group-meta">${g.items.length} ไอเทม → จะถูกสร้างเป็น Add-on เดียวกัน</div></div>
+                <div class="pairing-actions">
+                    <button class="pair-btn pair-btn-rename" type="button" onclick="renamePairGroup('${g.id}')">✏️ เปลี่ยนชื่อ</button>
+                    <button class="pair-btn pair-btn-delete" type="button" onclick="removePairGroup('${g.id}')">🗑️ ยกเลิกกลุ่ม</button>
+                </div>
+            </div><div class="pair-group-items">${chips}</div>
+        </div>`;
+    }).join('');
+}
+function escapeHtml(value){return String(value).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');}
+
+function buildExportGroups(rows){
+    const validRows=Array.from(rows),rowById=new Map();
+    validRows.forEach(row=>{const id=getRowItemId(row);if(id)rowById.set(id,row);});
+    const groups=[],groupedIds=new Set();
+
+    pairGroups.forEach((group,index)=>{
+        const groupRows=group.items.map(id=>rowById.get(id)).filter(Boolean);
+        if(groupRows.length>=2){
+            groups.push({id:group.id,name:safeFileName(group.name)||`Pair_${index+1}`,rows:groupRows});
+            groupRows.forEach(row=>groupedIds.add(getRowItemId(row)));
+        }
+    });
+
+    validRows.forEach((row,index)=>{
+        const id=getRowItemId(row);if(!id||groupedIds.has(id))return;
+        const displayName=getRowItemName(row);
+        groups.push({id:`single_${index}`,name:safeFileName(displayName||id)||`Single_${index+1}`,rows:[row]});
+    });
+    return groups;
+}
+
+
+function removeItemRow(rowId){
+    const row=document.getElementById(rowId);if(!row)return;
+    const itemId=getRowItemId(row);
+    if(!confirm(`ต้องการลบไอเทม "${itemId||'รายการนี้'}" ใช่หรือไม่?`))return;
+    if(itemId)removeItemFromPairGroup(itemId);
+    row.remove();renderPairGroups();
+}
+
+function addItemRow() {
+    const tbody = document.getElementById('itemTableBody');
+    const row = document.createElement('tr');
+    row.id = `row-${itemCount}`;
+    
+    // สร้าง HTML ใหม่โดยเพิ่ม div สำหรับแสดงสถานะไฟล์
+    row.innerHTML = `
+        <td data-label="จับคู่" style="text-align:center;"><input type="checkbox" class="pair-check" title="เลือกไอเทมเพื่อจับคู่"></td>
+        <td data-label="ไอดีไอเทม (ID)"><input type="text" class="item-id" value="bunny_item_${itemCount}"></td>
+        <td data-label="ชื่อที่แสดงในเกม"><input type="text" class="item-name" value="Bunny Item ${itemCount}"></td>
+        <td data-label="ประเภท / สล็อต (Slot)">
+            <select class="item-slot">
+                <optgroup label="👕 เครื่องแต่งกาย (Wearable)">
+                    <option value="slot.armor.chest" selected>ส่วนตัว (Chest)</option>
+                    <option value="slot.armor.head">ส่วนหัว (Head)</option>
+                    <option value="slot.armor.legs">ส่วนขา (Legs)</option>
+                    <option value="slot.armor.feet">ส่วนเท้า (Feet)</option>
+                </optgroup>
+                <optgroup label="🍎 ของทั่วไป (Items)">
+                    <option value="food">อาหาร (Food)</option>
+                    <option value="general">ไอเทมทั่วไป (General Item)</option>
+                </optgroup>
+            </select>
+        </td>
+        <td data-label="รูปแบบแอนิเมชัน">
+            <select class="model-type">
+                <option value="animated">🏃 ขยับได้ (Animated)</option>
+                <option value="static" selected>🗿 ไม่ขยับ (Static Model)</option>
+            </select>
+        </td>
+        <td data-label="ส่วนประกอบโมเดล (Parts)">
+            <select class="model-part" onchange="handleModelPartChange(this)">
+                <option value="body_no_head" selected>👕 เฉพาะตัวไม่มีหัว (Body No Head)</option>
+                <option value="head_only">👑 เฉพาะหัว (Head Only)</option>
+                <option value="full_body">🧍 เต็มตัว (Full Body)</option>
+            </select>
+        </td>
+        <td data-label="RP ไอคอน">
+            <input type="file" class="file-icon" accept="image/png" onchange="updateFileStatus(this)">
+            <div class="file-status" style="font-size:10px; color:#6fa073; margin-top:4px; font-weight:bold;"></div>
+        </td>
+        <td data-label="RP สกินโมเดล">
+            <input type="file" class="file-skin" accept="image/png" onchange="updateFileStatus(this)">
+            <div class="file-status" style="font-size:10px; color:#6fa073; margin-top:4px; font-weight:bold;"></div>
+        </td>
+        <td style="text-align:center;"><span class="remove-btn" onclick="removeItemRow('${row.id}')">✖</span></td>
+    `;
+    tbody.appendChild(row);
+    itemCount++;
+
+    row.querySelector('.item-id').addEventListener('input', renderPairGroups);
+    row.querySelector('.item-name').addEventListener('input', renderPairGroups);
+    row.querySelector('.pair-check').addEventListener('change', function() {
+        row.classList.toggle('pair-selected', this.checked);
+    });
+
+    renderPairGroups();
+}
+
+// เพิ่มฟังก์ชันนี้ต่อท้ายในส่วน <script> เพื่อจัดการสถานะการอัพโหลด
+function updateFileStatus(input) {
+    const statusDiv = input.nextElementSibling;
+    if (input.files && input.files.length > 0) {
+        statusDiv.innerText = "✅ อัพโหลดแล้ว: " + input.files[0].name;
+    } else {
+        statusDiv.innerText = "";
+    }
+}
+
+async function resizeImage(file, size) {
+    return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = size; canvas.height = size;
+                const ctx = canvas.getContext('2d');
+                ctx.imageSmoothingEnabled = false;
+                ctx.drawImage(img, 0, 0, size, size);
+                canvas.toBlob((blob) => resolve(blob), 'image/png');
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+function safeFileName(text) {
+    return text.replace(/[^\w\s-]/gi, '').trim().replace(/\s+/g, '_');
+}
+
+/*
+ * ================================================================
+ * 🧩 MODEL LIBRARY — แก้ไขโมเดลตรงนี้
+ * ================================================================
+ *
+ * จุดประสงค์:
+ * - แยกโค้ดโมเดลออกจากระบบสร้าง Add-on
+ * - ถ้าต้องการแก้ "โมเดลเต็มตัว" ให้แก้เฉพาะ FULL BODY MODEL ด้านล่าง
+ * - ไม่ต้องเข้าไปแก้ใน buildAddonPack()
+ *
+ * หมายเหตุ:
+ * - ห้ามเปลี่ยนชื่อ key ถ้าไม่ได้แก้ส่วน model selector ด้วย
+ * - `id` จะถูกส่งเข้ามาเพื่อให้ geometry identifier ตรงกับไอเทมแต่ละชิ้น
+ * ================================================================
+ */
+
+const MODEL_LIBRARY = {
+
+    // ============================================================
+    // 🧍 MODEL: BODY + HEAD + ARMS + LEGS (FULL BODY)
+    // ============================================================
+    // ⭐ ถ้าต้องการแก้โมเดลเต็มตัว ให้แก้เฉพาะ object นี้
+    // ⭐ ส่วนที่แก้บ่อย:
+    //    - bones       = ชิ้นส่วน/กระดูกของโมเดล
+    //    - pivot       = จุดหมุน
+    //    - cubes       = รูปร่างตัวโมเดล
+    //    - origin/size = ตำแหน่งและขนาด
+    //    - uv          = ตำแหน่ง Texture
+    full_body: (id) => {
+        return { "format_version": "1.12.0", "minecraft:geometry": [{ "description": { "identifier": `geometry.${id}`, "texture_width": 64, "texture_height": 64, "visible_bounds_width": 5, "visible_bounds_height": 4, "visible_bounds_offset": [0, 1, 0] }, "bones": [ { "name": "root", "pivot": [0, 0, 0] }, { "name": "waist", "parent": "root", "pivot": [0, 12, 0] }, { "name": "body", "parent": "waist", "pivot": [0, 24, 0] }, { "name": "head", "parent": "body", "pivot": [0, 24, 0] }, { "name": "hat", "parent": "head", "pivot": [0, 24, 0] }, { "name": "Eye", "parent": "head", "pivot": [0, 27.125, -4.03125] }, { "name": "righteye", "parent": "Eye", "pivot": [-0.2, 25.425, -4.03125] }, { "name": "eyelid", "parent": "Eye", "pivot": [0, 25.725, -4.03125] }, { "name": "lefteye", "parent": "Eye", "pivot": [0.2, 25.425, -4.03125] }, { "name": "Hair", "parent": "head", "pivot": [0, 24, 4] }, { "name": "leftArm", "parent": "body", "pivot": [5, 21.5, 0] }, { "name": "rightArm", "parent": "body", "pivot": [-5, 21.5, 0] }, { "name": "rightLeg", "parent": "root", "pivot": [-1.9, 12, 0] }, { "name": "leftLeg", "parent": "root", "pivot": [1.9, 12, 0] } ] }] }
+    },
+
+    // ============================================================
+    // 🧍 MODEL: BODY WITHOUT HEAD
+    // ============================================================
+    body_no_head: (id) => {
+        return { "format_version": "1.12.0", "minecraft:geometry": [{ "description": { "identifier": `geometry.${id}`, "texture_width": 64, "texture_height": 64, "visible_bounds_width": 5, "visible_bounds_height": 4, "visible_bounds_offset": [0, 1, 0] }, "bones": [ { "name": "root", "pivot": [0, 0, 0] }, { "name": "waist", "parent": "root", "pivot": [0, 12, 0] }, { "name": "body", "parent": "waist", "pivot": [0, 24, 0], "cubes": [{ "origin": [-4, 12, -2], "size": [8, 12, 4], "uv": { "north": {"uv": [20, 20], "uv_size": [8, 12]}, "east": {"uv": [16, 20], "uv_size": [4, 12]}, "south": {"uv": [32, 20], "uv_size": [8, 12]}, "west": {"uv": [28, 20], "uv_size": [4, 12]}, "up": {"uv": [20, 16], "uv_size": [8, 4]}, "down": {"uv": [28, 20], "uv_size": [8, -4]} } }] }, { "name": "jacket", "parent": "body", "pivot": [0, 24, 0] }, { "name": "cape", "parent": "body", "pivot": [0, 24, -3] }, { "name": "leftArm", "parent": "body", "pivot": [5, 21.5, 0], "cubes": [{"origin": [4, 11.5, -2], "size": [3, 12, 4], "uv": [32, 48]}] }, { "name": "leftSleeve2", "parent": "leftArm", "pivot": [5, 21.5, 0], "cubes": [{"origin": [4, 11.5, -2], "size": [3, 12, 4], "inflate": 0.25, "uv": [48, 48]}] }, { "name": "leftItem2", "parent": "leftArm", "pivot": [6, 14.5, 1] }, { "name": "rightArm", "parent": "body", "pivot": [-5, 21.5, 0], "cubes": [{"origin": [-7, 11.5, -2], "size": [3, 12, 4], "uv": [40, 16]}] }, { "name": "rightSleeve2", "parent": "rightArm", "pivot": [-5, 21.5, 0], "cubes": [{"origin": [-7, 11.5, -2], "size": [3, 12, 4], "inflate": 0.25, "uv": [40, 32]}] }, { "name": "rightItem2", "parent": "rightArm", "pivot": [-6, 14.5, 1], "locators": { "lead_hold": [-6, 14.5, 1] } }, { "name": "Hair2", "parent": "body", "pivot": [0, 24, 0], "cubes": [{ "origin": [-4, 12, -2], "size": [8, 12, 0], "inflate": 0.25, "uv": { "north": {"uv": [20, 36], "uv_size": [8, 12]}, "east": {"uv": [16, 36], "uv_size": [4, 12]}, "west": {"uv": [28, 36], "uv_size": [4, 12]}, "down": {"uv": [28, 36], "uv_size": [8, -4]} } }] }, { "name": "rightLeg", "parent": "root", "pivot": [-1.9, 12, 0], "cubes": [{ "origin": [-3.9, 0, -2], "size": [4, 12, 4], "uv": { "north": {"uv": [4, 20], "uv_size": [4, 12]}, "east": {"uv": [0, 20], "uv_size": [4, 12]}, "south": {"uv": [12, 20], "uv_size": [4, 12]}, "west": {"uv": [8, 20], "uv_size": [4, 12]}, "up": {"uv": [4, 16], "uv_size": [4, 4]}, "down": {"uv": [8, 20], "uv_size": [4, -4]} } }] }, { "name": "rightPants", "parent": "rightLeg", "pivot": [-1.9, 12, 0], "cubes": [{ "origin": [-3.9, 0, -2], "size": [4, 12, 4], "inflate": 0.25, "uv": { "north": {"uv": [4, 36], "uv_size": [4, 12]}, "east": {"uv": [0, 36], "uv_size": [4, 12]}, "south": {"uv": [12, 36], "uv_size": [4, 12]}, "west": {"uv": [8, 36], "uv_size": [4, 12]}, "up": {"uv": [4, 32], "uv_size": [4, 4]}, "down": {"uv": [8, 36], "uv_size": [4, -4]} } }] }, { "name": "leftLeg", "parent": "root", "pivot": [1.9, 12, 0], "cubes": [{ "origin": [1.9, 0, 0], "size": [4, 12, 4], "pivot": [2, 0, 2], "rotation": [0, 87.5, 0], "uv": { "north": {"uv": [20.125, 52], "uv_size": [-4, 12]}, "east": {"uv": [27.625, 52], "uv_size": [4, 12]}, "south": {"uv": [24.25, 52], "uv_size": [-4, 12]}, "west": {"uv": [20.125, 52], "uv_size": [4, 12]}, "up": {"uv": [24.375, 48], "uv_size": [-4, 4]}, "down": {"uv": [28.375, 52], "uv_size": [-4, -4]} } }] }, { "name": "leftPants", "parent": "leftLeg", "pivot": [1.9, 12, 0], "cubes": [{ "origin": [-0.1, 0, -2], "size": [4, 12, 4], "inflate": 0.25, "uv": { "north": {"uv": [4, 52], "uv_size": [4, 12]}, "east": {"uv": [0, 52], "uv_size": [4, 12]}, "south": {"uv": [12, 52], "uv_size": [4, 12]}, "west": {"uv": [8, 52], "uv_size": [4, 12]}, "up": {"uv": [4, 48], "uv_size": [4, 4]}, "down": {"uv": [8, 52], "uv_size": [4, -4]} } }] } ] }] }
+    },
+
+    // ============================================================
+    // 🙂 MODEL: HEAD ONLY
+    // ============================================================
+    head_only: (id) => {
+        return { "format_version": "1.21.0", "minecraft:geometry": [{ "description": { "identifier": `geometry.${id}`, "texture_width": 64, "texture_height": 64, "visible_bounds_width": 5, "visible_bounds_height": 4, "visible_bounds_offset": [0, 1, 0] }, "bones": [ { "name": "root", "pivot": [0, 0, 0] }, { "name": "waist", "parent": "root", "pivot": [0, 12, 0] }, { "name": "head", "parent": "waist", "pivot": [0, 24, 0], "cubes": [{ "origin": [-4, 24, -4], "size": [8, 8, 8], "uv": { "north": {"uv": [8, 8], "uv_size": [8, 8]}, "east": {"uv": [0, 8], "uv_size": [8, 8]}, "south": {"uv": [24, 8], "uv_size": [8, 8]}, "west": {"uv": [16, 8], "uv_size": [8, 8]}, "up": {"uv": [8, 0], "uv_size": [8, 8]}, "down": {"uv": [16, 8], "uv_size": [8, -8]} } }] }, { "name": "hat", "parent": "head", "pivot": [0, 24, 0], "cubes": [{ "origin": [-4, 24, -4], "size": [8, 8, 8], "inflate": 0.5, "uv": { "north": {"uv": [40, 8], "uv_size": [8, 8]}, "east": {"uv": [32, 8], "uv_size": [8, 8]}, "south": {"uv": [56, 8], "uv_size": [8, 8]}, "west": {"uv": [48, 8], "uv_size": [8, 8]}, "up": {"uv": [40, 0], "uv_size": [8, 8]}, "down": {"uv": [48, 8], "uv_size": [8, -8]} } }] }, { "name": "Eye", "parent": "head", "pivot": [0, 26.725, -4.03125] }, { "name": "righteye", "parent": "Eye", "pivot": [-0.2, 25.425, -4.03125] }, { "name": "eyelid", "parent": "Eye", "pivot": [0, 25.725, -4.03125] }, { "name": "lefteye", "parent": "Eye", "pivot": [0.2, 25.425, -4.03125] }, { "name": "Hair", "parent": "head", "pivot": [0, 24, 2.2] } ] }] }
+    }
+};
+
+// ถ้า modelPart ไม่ตรงกับรายการด้านบน ให้ใช้ FULL BODY เป็นค่าเริ่มต้น
+function getModelJSON(modelPart, id) {
+    const builder = MODEL_LIBRARY[modelPart] || MODEL_LIBRARY.full_body;
+    return builder(id);
+}
+
+async function buildAddonPack(globalZip, rows, packInGameName, packDesc, NAMESPACE, size, mainIconFile, folderBaseName) {
+    const folderSafeName = safeFileName(folderBaseName) || "Cafe_Bunny";
+    const bpFolder = globalZip.folder(`${folderSafeName}_BP`);
+    const rpFolder = globalZip.folder(`${folderSafeName}_RP`);
+
+    // ฝังไฟล์ลิขสิทธิ์ตัวหลักไว้ที่ระดับ Root
+    const copyrightJsonContent = {
+        "copyright": "© 2026 Nuttsumechan. All Rights Reserved.",
+        "author": "Nuttsumechan",
+        "notice_th": "ห้ามมิให้ทำการคัดลอก ดัดแปลง แก้ไข เผยแพร่ หรือแจกจ่ายโครงสร้างสคริปต์นี้โดยเด็ดขาด",
+        "notice_en": "Unauthorized copying, modification, or distribution of this script structure is strictly prohibited.",
+        "legal_protection": "Protected under the Copyright Act of Thailand B.E. 2537 and international treaties."
+    };
+    
+    bpFolder.file("COPYRIGHT_NOTICE.json", stringifyJsonWithCopyright(copyrightJsonContent));
+    rpFolder.file("COPYRIGHT_NOTICE.json", stringifyJsonWithCopyright(copyrightJsonContent));
+
+    if (mainIconFile) {
+        bpFolder.file("pack_icon.png", mainIconFile);
+        rpFolder.file("pack_icon.png", mainIconFile);
+    }
+
+    const bpItems = bpFolder.folder("items");
+    const bpRecipes = bpFolder.folder("recipes");
+    const rpAttach = rpFolder.folder("attachables");
+    const rpModels = rpFolder.folder("models/entity");
+    const rpAnims = rpFolder.folder("animations");
+    const rpTexItems = rpFolder.folder("textures/items");
+    const rpTexSkin = rpFolder.folder("textures/entity/pamobile");
+    const rpTexts = rpFolder.folder("texts");
+
+    let textureAtlas = { "resource_pack_name": packInGameName, "texture_name": "atlas.items", "texture_data": {} };
+    let langData = getInjectCopyrightComment(true) + `${NAMESPACE}:itemGroup.name.racePack=§l§6${packInGameName} §r§7By Nuttsumechan\n\n`;
+    let createdItemIdentifiers = [];
+
+    for (const row of rows) {
+        const rawId = row.querySelector('.item-id').value.trim().toLowerCase();
+        const id = safeFileName(rawId);
+        const displayName = row.querySelector('.item-name').value.trim();
+        const slotValue = row.querySelector('.item-slot').value;
+        const modelType = row.querySelector('.model-type').value;
+        const modelPart = row.querySelector('.model-part').value;
+        const iconFile = row.querySelector('.file-icon').files[0];
+        const skinFile = row.querySelector('.file-skin').files[0];
+
+        if (!id) continue;
+
+        const fullIdentifier = `${NAMESPACE}:${id}`;
+        createdItemIdentifiers.push(fullIdentifier);
+
+        if (iconFile) {
+            const resized = await resizeImage(iconFile, size);
+            rpTexItems.file(`${id}.png`, resized);
+        }
+        if (skinFile) {
+            rpTexSkin.file(`${id}.png`, skinFile);
+        }
+
+        let itemComponents = {
+            "minecraft:max_stack_size": 1,
+            "minecraft:icon": { "texture": id },
+            "minecraft:display_name": { "value": `item.${NAMESPACE}:${id}.name` }
+        };
+
+        if (slotValue.startsWith("slot.armor")) {
+            itemComponents["minecraft:wearable"] = { "slot": slotValue };
+        } else if (slotValue === "food") {
+            itemComponents["minecraft:food"] = { "nutrition": 4, "saturation_modifier": "low" };
+            itemComponents["minecraft:use_animation"] = "eat";
+            itemComponents["minecraft:use_modifiers"] = { "use_duration": 1.6, "movement_modifier": 0.35 };
+        }
+
+        const finalItemJSON = {
+            "format_version": "1.20.50",
+            "minecraft:item": {
+                "description": { 
+                    "identifier": fullIdentifier, 
+                    "menu_category": { 
+                        "category": slotValue === "food" ? "nature" : "equipment",
+                        "group": `${NAMESPACE}:itemGroup.name.racePack`
+                    } 
+                },
+                "components": itemComponents
+                
+            }
+        };
+        // ฝังลิขสิทธิ์ลงในไฟล์ไอเทมแต่ละชิ้น
+        bpItems.file(`${id}.json`, stringifyJsonWithCopyright(finalItemJSON));
+
+        if (slotValue.startsWith("slot.armor")) {
+            let attachAnimations = {};
+            let attachScripts = {};
+
+            if (modelType === "animated") {
+                
+                // ฝังลิขสิทธิ์ลงในไฟล์แอนิเมชันย่อยๆ ทุกไฟล์
+                rpAnims.file(`${id}.eye.animation.json`, stringifyJsonWithCopyright({ "format_version": "1.8.0", "animations": { "animation.lll.eye": { "loop": true, "animation_length": 3.5, "bones": { "Eye": { "scale": { "1.7": [1, 0, 0], "2.6": [1, 1.06, 0], "3.5": [1, 0, 0] } } } } } }));
+                rpAnims.file(`${id}.fly.animation.json`, stringifyJsonWithCopyright({ "format_version": "1.8.0", "animations": { "animation.lll.fly": { "loop": true, "bones": { "Hair": { "relative_to": { "rotation": "entity" }, "rotation": [ "-math.clamp(math.lerp(0, -110, query.cape_flap_amount) - (13 * query.modified_move_speed), -90, 0)+query.eye_target_y_rotation", "query.target_y_rotation", 0 ] } } } } }));
+                rpAnims.file(`${id}.lll.animation..json`, stringifyJsonWithCopyright({ "format_version": "1.8.0", "animations": { "animation.lll.walk": { "loop": true } } }));
+                rpAnims.file(`${id}.vm.animation.json`, stringifyJsonWithCopyright({ "format_version": "1.8.0", "animations": { "animation.vm.vm": { "loop": true, "animation_length": 3.5, "bones": { "righteye": { "position": ["math.clamp(query.target_y_rotation,0,45)/-45", 0, 0] }, "eyelid": { "scale": { "2.5": [1, 0, 1], "3.0": [1, 1, 1], "3.5": [1, 0, 1] } }, "lefteye": { "position": ["math.clamp(query.target_y_rotation,-45,0)/-45", 0, 0] } } } } }));
+            }
+
+            const attachJSON = {
+                "format_version": "1.20.30",
+                "minecraft:attachable": {
+                    "description": {
+                        "identifier": fullIdentifier,
+                        "materials": { "default": "armor" },
+                        "textures": { "default": `textures/entity/pamobile/${id}` },
+                        "geometry": { "default": `geometry.${id}` },
+                        "animations": {
+									"eye": "animation.lll.eye",
+                    				"vmu": "animation.vmu.vmu",
+                    				"fly": "animation.lll.fly"
+                    			},
+                        "scripts": {
+                        "animate": [
+                         {
+                           "vm": "query.is_alive"
+                          },
+                          {
+                           "fly": "query.is_alive"
+                          },
+                          {
+                           "walk": "query.ground_speed > 1.0"
+                          }
+                       ]
+                  },
+                         "render_controllers": ["controller.render.default"]
+                    }
+                }
+            };
+            // ฝังลิขสิทธิ์ลงในไฟล์ Attachable
+            rpAttach.file(`${id}.json`, stringifyJsonWithCopyright(attachJSON));
+
+            // ============================================================
+            // 🧩 สร้าง Geometry จาก MODEL_LIBRARY
+            // ============================================================
+            // ไม่ต้องแก้ระบบสร้าง Add-on ตรงนี้
+            // ถ้าจะเปลี่ยนโมเดล ให้ไปแก้ที่ MODEL_LIBRARY ด้านบนไฟล์
+            const modelJSON = getModelJSON(modelPart, id);
+            // ฝังลิขสิทธิ์ลงในไฟล์โมเดล 3D Geometry
+            rpModels.file(`model.geo.${id}.json`, stringifyJsonWithCopyright(modelJSON));
+        }
+
+        textureAtlas.texture_data[id] = { "textures": `textures/items/${id}` };
+        langData += `item.${NAMESPACE}:${id}.name=${displayName}\n`;
+    }
+
+    if (createdItemIdentifiers.length >= 1) {
+        const catalogJSON = {
+            "format_version": "1.21.60",
+            "minecraft:crafting_items_catalog": {
+                "categories": [
+                    { "category_name": "equipment", "groups": [ { "group_identifier": { "icon": "m:kco", "name": `${NAMESPACE}:itemGroup.name.racePack` }, "items": createdItemIdentifiers } ] }
+                ]
+            }
+        };
+        // ฝังลิขสิทธิ์ลงในแคตตาล็อกเมนูของ BP
+        bpRecipes.file("crafting_item_catalog.json", stringifyJsonWithCopyright(catalogJSON));
+    }
+
+    // ฝังลิขสิทธิ์ลงในไฟล์สมุดรายชื่อพื้นผิวไอเทม
+    rpFolder.file("textures/item_texture.json", stringifyJsonWithCopyright(textureAtlas));
+    
+    // บันทึกไฟล์ภาษาหลัก (.lang จะถูกฝังลิขสิทธิ์ด้วยเครื่องหมาย ## นำหน้า)
+    rpTexts.file("en_US.lang", langData);
+
+    // รองรับการเปิดไฟล์ HTML โดยตรงจากเครื่อง (file://) ด้วย
+    // crypto.randomUUID() บางเบราว์เซอร์ไม่อนุญาตใน file:// จึงมี fallback UUID
+    const makeUUID = () => {
+        if (window.crypto && typeof window.crypto.randomUUID === "function") {
+            return window.crypto.randomUUID();
+        }
+        if (window.crypto && typeof window.crypto.getRandomValues === "function") {
+            const bytes = new Uint8Array(16);
+            window.crypto.getRandomValues(bytes);
+            bytes[6] = (bytes[6] & 0x0f) | 0x40;
+            bytes[8] = (bytes[8] & 0x3f) | 0x80;
+            const hex = Array.from(bytes, b => b.toString(16).padStart(2, "0")).join("");
+            return `${hex.slice(0,8)}-${hex.slice(8,12)}-${hex.slice(12,16)}-${hex.slice(16,20)}-${hex.slice(20)}`;
+        }
+        return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, c => {
+            const r = Math.random() * 16 | 0;
+            const v = c === "x" ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+    };
+
+    const bpHeaderUUID = makeUUID();
+    const bpModuleUUID = makeUUID();
+    const rpHeaderUUID = makeUUID();
+    const rpModuleUUID = makeUUID();
+
+    // ฝังลิขสิทธิ์ลงในไฟล์คำอธิบายระบบของเกม (manifest.json) ทั้งคู่
+    bpFolder.file("manifest.json", stringifyJsonWithCopyright({
+        "format_version": 2,
+        "header": { "name": `${packInGameName} (BP)`, "description": `${packDesc} | © 2026 Nuttsumechan`, "uuid": bpHeaderUUID, "version": [1, 0, 0], "min_engine_version": [1, 26, 20] },
+        "modules": [{ "type": "data", "uuid": bpModuleUUID, "version": [1, 0, 0] }],
+        "dependencies": [{ "uuid": rpHeaderUUID, "version": [1, 0, 0] }]
+    }));
+
+    rpFolder.file("manifest.json", stringifyJsonWithCopyright({
+        "format_version": 2,
+        "header": { "name": `${packInGameName} (RP)`, "description": `${packDesc} | © 2026 Nuttsumechan`, "uuid": rpHeaderUUID, "version": [1, 0, 0], "min_engine_version": [1, 26, 20] },
+        "modules": [{ "type": "resources", "uuid": rpModuleUUID, "version": [1, 0, 0] }]
+    }));
+
+    // สำคัญ: buildAddonPack มีหน้าที่ “สร้างโครงสร้าง Add-on ลงใน ZIP เท่านั้น”
+    // ห้ามดาวน์โหลดตรงนี้ เพราะ processDownload() เป็นผู้ควบคุมการดาวน์โหลด
+    // ไม่เช่นนั้น 1 กลุ่มจะสร้างไฟล์ดาวน์โหลดซ้ำอีก 1 ไฟล์
+    return folderSafeName;
+}
+
+async function processDownload() {
+    const confirmButton = document.getElementById('confirmDownloadBtn');
+    const originalButtonText = confirmButton ? confirmButton.textContent : 'ยอมรับและดาวน์โหลด (Accept & Download)';
+
+    if (confirmButton) {
+        confirmButton.disabled = true;
+        confirmButton.textContent = '⏳ กำลังสร้างไฟล์...';
+    }
+
+    try {
+        closeCopyrightModal();
+
+        const rows = Array.from(document.querySelectorAll('#itemTableBody tr'));
+        if (rows.length === 0) {
+            throw new Error('กรุณาเพิ่มไอเทมในตารางอย่างน้อย 1 รายการก่อนครับ!');
+        }
+
+        if (typeof JSZip === 'undefined') {
+            throw new Error('ไม่สามารถโหลด JSZip ได้ กรุณาเปิดไฟล์ใหม่โดยเชื่อมต่ออินเทอร์เน็ต แล้วลองอีกครั้ง');
+        }
+        if (typeof saveAs !== 'function') {
+            throw new Error('ไม่สามารถโหลดระบบดาวน์โหลดไฟล์ได้ กรุณาเปิดไฟล์ใหม่โดยเชื่อมต่ออินเทอร์เน็ต แล้วลองอีกครั้ง');
+        }
+
+        const packInGameName = document.getElementById('addonName').value.trim() || 'Cafe Bunny Pack';
+        const packDesc = document.getElementById('addonDesc').value.trim() || 'Generated by Cafe Bunny Editor';
+        const NAMESPACE = safeFileName(document.getElementById('addonNamespace').value).toLowerCase() || 'bunny';
+        const size = parseInt(document.getElementById('globalSize').value);
+        const mainIconFile = document.getElementById('addonIcon').files[0];
+        const modeElement = document.querySelector('input[name="downloadMode"]:checked');
+        const downloadMode = modeElement ? modeElement.value : 'paired';
+        const baseName = safeFileName(packInGameName) || 'Cafe_Bunny';
+
+        async function createZip(groups) {
+            if (!groups.length) return null;
+            const zip = new JSZip();
+            for (const group of groups) {
+                await buildAddonPack(
+                    zip,
+                    group.rows,
+                    packInGameName,
+                    packDesc,
+                    NAMESPACE,
+                    size,
+                    mainIconFile,
+                    group.name
+                );
+            }
+            return zip.generateAsync({ type: 'blob' });
+        }
+
+        const pairedGroups = buildExportGroups(rows);
+        const combinedGroups = [{
+            id: 'all_items',
+            name: 'Full_Set',
+            rows: rows.slice()
+        }];
+
+        if (downloadMode === 'paired') {
+            if (!pairedGroups.length) {
+                throw new Error('ไม่พบรายการที่สามารถ Export แบบแยกได้');
+            }
+            const pairedZip = await createZip(pairedGroups);
+            saveAs(pairedZip, `${baseName}_01_Separate_By_Pairing.zip`);
+            return;
+        }
+
+        if (downloadMode === 'combined') {
+            const combinedZip = await createZip(combinedGroups);
+            saveAs(combinedZip, `${baseName}_02_All_In_One.zip`);
+            return;
+        }
+
+        // แบบทั้ง 2 แบบ: ส่งออกเป็น ZIP เดียวที่ข้างในมี ZIP ของทั้งสองรูปแบบ
+        // เพื่อให้การเปิดไฟล์จากเครื่อง (file://) ไม่ถูกเบราว์เซอร์บล็อกการดาวน์โหลดไฟล์ที่สอง
+        if (!pairedGroups.length) {
+            throw new Error('ไม่พบรายการที่สามารถ Export แบบแยกได้ จึงไม่สามารถสร้างไฟล์ทั้ง 2 แบบได้');
+        }
+
+        const [pairedZip, combinedZip] = await Promise.all([
+            createZip(pairedGroups),
+            createZip(combinedGroups)
+        ]);
+
+        const bothZip = new JSZip();
+        bothZip.file(`${baseName}_01_Separate_By_Pairing.zip`, pairedZip);
+        bothZip.file(`${baseName}_02_All_In_One.zip`, combinedZip);
+        const bothContent = await bothZip.generateAsync({ type: 'blob' });
+        saveAs(bothContent, `${baseName}_00_Both_Formats.zip`);
+
+    } catch (error) {
+        console.error('Download error:', error);
+        alert(`ไม่สามารถสร้างไฟล์ดาวน์โหลดได้\n\n${error && error.message ? error.message : error}`);
+    } finally {
+        if (confirmButton) {
+            confirmButton.disabled = false;
+            confirmButton.textContent = originalButtonText;
+        }
+    }
+}
+
+// เริ่มต้นสร้างแถวแรกให้ผู้ใช้งานโดยอัตโนมัติ
+addItemRow();
+renderPairGroups();
+</script>
+</body>
+</html>

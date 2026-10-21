@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ศูนย์รวมระบบงานและ Add-on ที่ฝาก</title>
+
+    <link rel="icon" href="https://media.discordapp.net/attachments/1283550912240943116/1286293143519625227/a1b95347-2363-4d8b-8dfe-e79787d846a4.gif?ex=6ad8a6d7&is=6ad75557&hm=3d7dd724463a35afce4d33c53e72dd2d299f7e0543887787bde2542167133c56&=&width=384&height=384" type="image/png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cn-red: #9e2a2b;
+            --cn-red-light: #be3a3c;
+            --cn-gold: #c5a059;
+            --cn-gold-light: #fefae0;
+            --cn-dark: #2b1e1e;
+            --bg-color: #faf6f0;
+            --card-bg: #ffffff;
+            --border-color: #e6d7c3;
+            --shadow: 0 4px 15px rgba(0,0,0,0.06);
+            --shadow-hover: 0 10px 25px rgba(158, 42, 43, 0.15);
+            --badge-new: #d90429;
+        }
+
+        * {
+            box-sizing: border-box;
+            transition: all 0.25s ease;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            font-family: 'Sarabun', sans-serif;
+            margin: 0;
+            padding: 40px 20px;
+            color: var(--cn-dark);
+            scroll-behavior: smooth;
+        }
+
+        /* --- Header Section --- */
+        .header-section {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 20px auto;
+        }
+
+        .header-icon {
+            width: 65px;
+            height: auto;
+            margin-bottom: 12px;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+        }
+
+        .main-title {
+            color: var(--cn-red);
+            font-size: 32px;
+            font-weight: 700;
+            margin: 0 0 8px 0;
+            letter-spacing: -0.5px;
+        }
+
+        .main-subtitle {
+            color: #666;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        /* --- Legal Warning Box Styles --- */
+        .info-group {
+            background: linear-gradient(135deg, #fffcf5 0%, #fff4f4 100%);
+            border: 2px solid var(--cn-red);
+            border-radius: 12px;
+            padding: 22px 25px;
+            margin-bottom: 30px;
+            text-align: left;
+            box-shadow: 0 6px 20px rgba(158, 42, 43, 0.12);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .info-group::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 6px;
+            height: 100%;
+            background-color: var(--cn-red);
+        }
+
+        .legal-banner-title {
+            color: var(--cn-red);
+            font-size: 16px;
+            font-weight: 700;
+            margin: 0 0 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px dashed var(--border-color);
+            padding-bottom: 8px;
+        }
+
+        .info-group p {
+            margin: 8px 0;
+            color: #333;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .info-label {
+            font-weight: 700;
+            color: var(--cn-red);
+        }
+
+        .info-link {
+            display: inline-block;
+            background-color: var(--cn-red);
+            color: #ffffff !important;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-weight: 600;
+            text-decoration: none;
+            margin-top: 4px;
+            box-shadow: 0 2px 5px rgba(158, 42, 43, 0.3);
+        }
+
+        .info-link:hover {
+            background-color: var(--cn-dark);
+            transform: translateY(-1px);
+        }
+
+        /* --- Filter & Search Section --- */
+        .filter-section {
+            max-width: 1200px;
+            margin: 0 auto 35px auto;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            align-items: center;
+        }
+
+        .search-box {
+            position: relative;
+            width: 100%;
+            max-width: 550px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 14px 24px;
+            font-size: 15px;
+            font-family: 'Sarabun', sans-serif;
+            border: 2px solid var(--border-color);
+            border-radius: 30px;
+            outline: none;
+            background-color: #ffffff;
+            box-shadow: var(--shadow);
+        }
+
+        .search-input:focus {
+            border-color: var(--cn-red);
+            box-shadow: 0 6px 20px rgba(158, 42, 43, 0.12);
+        }
+
+        .category-filter-container {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .filter-btn {
+            background-color: #ffffff;
+            border: 1.5px solid var(--cn-gold);
+            color: var(--cn-dark);
+            padding: 9px 20px;
+            border-radius: 20px;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background-color: var(--cn-red);
+            color: #ffffff;
+            border-color: var(--cn-red);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(158, 42, 43, 0.25);
+        }
+
+        /* --- Section Container --- */
+        .section-container {
+            max-width: 1200px;
+            margin: 0 auto 40px auto;
+            background-color: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(8px);
+            padding: 28px;
+            border-radius: 18px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 22px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--cn-gold);
+        }
+
+        .category-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .category-icon {
+            width: 34px;
+            height: 34px;
+            object-fit: contain;
+        }
+
+        .category-title {
+            color: var(--cn-red);
+            font-size: 22px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .section-badge {
+            background-color: var(--cn-gold-light);
+            color: var(--cn-dark);
+            border: 1px solid var(--cn-gold);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* --- Cards Grid --- */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 22px;
+            margin-bottom: 22px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 14px;
+            box-shadow: var(--shadow);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--cn-gold);
+        }
+
+        .badge-new {
+            position: absolute;
+            top: 22px;
+            right: 22px;
+            background-color: var(--badge-new);
+            color: #ffffff;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 9px;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(217, 4, 41, 0.4);
+            z-index: 2;
+            letter-spacing: 0.5px;
+        }
+
+        /* --- Addon Type Badges Style --- */
+        .type-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            font-size: 11px;
+            font-weight: 700;
+            border-radius: 6px;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+        .type-bp {
+            background-color: #e67e22;
+            color: #ffffff;
+        }
+        .type-rp {
+            background-color: #2980b9;
+            color: #ffffff;
+        }
+        .type-bprp {
+            background-color: #27ae60;
+            color: #ffffff;
+        }
+        .type-n {
+            background-color: #e90a0a;
+            color: #ffffff;
+        }
+        .type-website {
+            background-color: #8e44ad; /* โทนสีม่วงสำหรับป้ายเว็บไซต์ */
+            color: #ffffff;
+        }
+
+        .img-wrapper {
+            width: 100%;
+            height: 140px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 12px;
+            position: relative;
+            background-color: #f0e9df;
+            display: block;
+        }
+
+        .card-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .card:hover .card-img {
+            transform: scale(1.08);
+        }
+
+        .card-title {
+            color: var(--cn-red);
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            display: block;
+            text-decoration: none;
+            line-height: 1.4;
+        }
+
+        .card-desc {
+            color: #555;
+            font-size: 13px;
+            line-height: 1.5;
+            flex-grow: 1;
+        }
+
+        /* --- Footer Button in Section --- */
+        .btn-more {
+            background: linear-gradient(135deg, var(--cn-red), var(--cn-red-light));
+            color: #ffffff;
+            border: 1px solid var(--cn-gold);
+            padding: 10px 24px;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 20px;
+            cursor: pointer;
+            float: right;
+            box-shadow: 0 4px 12px rgba(158, 42, 43, 0.22);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+        }
+
+        .btn-more:hover {
+            background: var(--cn-dark);
+            color: var(--cn-gold);
+            transform: translateX(3px);
+        }
+
+        .clear {
+            clear: both;
+        }
+
+        .no-results {
+            text-align: center;
+            font-size: 16px;
+            color: #777;
+            padding: 40px 20px;
+            background-color: #ffffff;
+            border-radius: 16px;
+            max-width: 1200px;
+            margin: 0 auto;
+            border: 1px dashed var(--border-color);
+            display: none;
+        }
+
+        /* --- Scroll to Top Button Style --- */
+        .scrollToTopBtn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, var(--cn-red), var(--cn-red-light));
+            color: var(--cn-gold-light);
+            border: 2px solid var(--cn-gold);
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(158, 42, 43, 0.3);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+
+        .scrollToTopBtn.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .scrollToTopBtn:hover {
+            background: var(--cn-dark);
+            color: var(--cn-gold);
+            transform: translateY(-4px);
+        }
+
+        /* --- Modal (ป๊อปอัปแสดงข้อมูล) --- */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: var(--card-bg);
+            border: 2px solid var(--cn-gold);
+            border-radius: 18px;
+            max-width: 480px;
+            width: 100%;
+            padding: 24px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            text-align: center;
+            animation: modalPopup 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes modalPopup {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--cn-red);
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            color: var(--cn-dark);
+        }
+
+        .modal-img-wrapper {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 15px auto;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid var(--cn-gold);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+
+        .modal-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .modal-badge {
+            display: inline-block;
+            background-color: var(--badge-new);
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+
+        .modal-title {
+            color: var(--cn-red);
+            font-size: 22px;
+            font-weight: 700;
+            margin: 0 0 8px 0;
+        }
+
+        .modal-desc {
+            color: #555;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .modal-detail-box {
+            background-color: var(--bg-color);
+            border: 1px dashed var(--border-color);
+            border-radius: 10px;
+            padding: 14px;
+            text-align: left;
+            font-size: 13.5px;
+            color: #333;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .modal-btn-link {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--cn-red), var(--cn-red-light));
+            color: #ffffff !important;
+            padding: 8px 20px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            border: 1px solid var(--cn-gold);
+        }
+
+        .modal-btn-link:hover {
+            background: var(--cn-dark);
+            color: var(--cn-gold) !important;
+        }
+
+        /* --- Social Buttons สำหรับทีมงาน --- */
+        .social-container {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .social-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 7px 14px;
+            border-radius: 18px;
+            color: #ffffff !important;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            transition: transform 0.2s;
+        }
+
+        .social-btn:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.1);
+        }
+
+        .btn-yt { background-color: #ff0000; }
+        .btn-fb { background-color: #1877f2; }
+        .btn-ig { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
+        .btn-tt { background-color: #000000; }
+        .btn-x  { background-color: #000000; border: 1px solid #444; }
+        .btn-dc { background-color: #5865f2; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 12px;
+            }
+            .main-title {
+                font-size: 25px;
+            }
+            .section-container {
+                padding: 18px;
+            }
+            .cards-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                gap: 14px;
+            }
+            .img-wrapper {
+                height: 110px;
+            }
+            .scrollToTopBtn {
+                bottom: 20px;
+                right: 20px;
+                width: 42px;
+                height: 42px;
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ปุ่มเลื่อนขึ้นด้านบนสุด -->
+    <button type="button" id="scrollToTopBtn" class="scrollToTopBtn" onclick="scrollToTop()" title="เลื่อนขึ้นด้านบน">▲</button>
+
+    <div class="header-section">
+        <div class="info-group">
+            <div class="legal-banner-title">
+                ⚠️ ประกาศข้อบังคับและประกาศคุ้มครองลิขสิทธิ์ (Copyright & Legal Notice)
+            </div>
+            <p><span class="info-label">ข้อกำหนดลิขสิทธิ์:</span> ซอร์สโค้ด ระบบงาน และไฟล์ส่วนเสริม (Add-on) ทั้งหมดในเว็บไซต์นี้ ได้รับการคุ้มครองตามพระราชบัญญัติลิขสิทธิ์ พ.ศ. 2537 และที่แก้ไขเพิ่มเติม สงวนลิขสิทธิ์โดย © 2026 Nuttsumechan ห้ามมิให้ผู้ใดคัดลอก ดัดแปลง แก้ไข ทำซ้ำ แงะไฟล์ หรือเผยแพร่ต่อสาธารณชนโดยไม่ได้รับอนุญาตเป็นลายลักษณ์อักษร หากฝ่าฝืนจะถูกดำเนินคดีตามกฎหมายสูงสุด</p>
+            <p><span class="info-label">ข้อกฎหมายและบทลงโทษ:</span> <a href="momo.html" class="info-link">📄 ตรวจสอบรายละเอียดข้อบังคับและบทลงโทษทางกฎหมายคลิกที่นี่</a></p>
+        </div>
+            
+        <img src="https://i.pinimg.com/originals/9d/2c/da/9d2cda06a8ccf884775bddcbd596198b.gif" alt="Star Icon" class="header-icon"><br>
+        <h1 class="main-title">ศูนย์รวมระบบงานและ Add-on ที่ฝาก</h1>
+        <span class="main-subtitle">รวบรวมระบบงาน เว็บไซต์ และ Add-on ล่าสุดที่นำมาลงใหม่และรายการทั้งหมด</span>
+    </div>
+
+    <!-- ส่วนค้นหาและกรองหมวดหมู่ -->
+    <div class="filter-section">
+        <div class="search-box">
+            <input type="text" id="searchInput" class="search-input" placeholder="🔍 ค้นหารายการลงใหม่ (ชื่อระบบ หรือ Add-on)..." onkeyup="filterItems()">
+        </div>
+        <div class="category-filter-container">
+            <button class="filter-btn active" onclick="filterCategory('all', this)">ทั้งหมด</button>
+            <button class="filter-btn" onclick="filterCategory('caretaker', this)">ทีมงาน / Project</button>
+            <button class="filter-btn" onclick="filterCategory('websitentt', this)">เว็บไซต์ที่ทำเอง</button>
+            <button class="filter-btn" onclick="filterCategory('addonntt', this)">Add-on ที่ทำเอง</button>
+            <button class="filter-btn" onclick="filterCategory('website', this)">เว็บไซต์ที่สนใจ</button>
+            <button class="filter-btn" onclick="filterCategory('addon', this)">Add-on ที่สนใจ</button>
+        </div>
+    </div>
+
+    <div id="noResults" class="no-results">ไม่พบข้อมูลระบบหรือ Add-on ที่ลงใหม่ตรงตามคำค้นหา</div>
+
+    <!-- 1: ทีมงาน -->
+    <div class="section-container" data-category="caretaker">
+        <div class="category-header">
+            <div class="category-header-left">
+                <img src="https://i.pinimg.com/originals/00/d4/fa/00d4fa4d0dd818876d77c2067cc8ce4b.gif" class="category-icon" alt="Website NTT">
+                <h2 class="category-title">ทีมงาน</h2>
+            </div>
+            <span class="section-badge">New Arrivals</span>
+        </div>
+        
+        <div class="cards-grid">
+            <!-- แอดมิน นัต -->
+            <div class="card" onclick="openTeamModal('แอดมิน นัต', 'ผู้ดูแล', 'แอดมิน และ ผู้ดูแลเว็บไซต์/Add-on', 'https://media.discordapp.net/attachments/1215302303574130759/1215303659114733689/310536464_185492220668454_2627724591928545716_n.png?ex=6ad8cabb&is=6ad7793b&hm=724317872196f7ea2cce6bec395764ce4f9c909f275409a1ee82c8dc421faf97&=&format=webp&quality=lossless&width=1024&height=576', 'ผู้ดูแลและควบคุมเว็บไซต์/ระบบ Add-on ทั้งหมด ติดต่อสอบถามเรื่องฝากงานหรือแจ้งปัญหาระบบได้', {
+                youtube: 'https://youtube.com',
+                ig: 'https://instagram.com',
+                discord: 'https://discord.gg/VktVEGcQW4'
+            })">
+                <span class="badge-new">ผู้ดูแล</span>
+                <div class="img-wrapper">
+                    <img src="https://media.discordapp.net/attachments/1215302303574130759/1215303659114733689/310536464_185492220668454_2627724591928545716_n.png?ex=6ad8cabb&is=6ad7793b&hm=724317872196f7ea2cce6bec395764ce4f9c909f275409a1ee82c8dc421faf97&=&format=webp&quality=lossless&width=1024&height=576" alt="แอดมิน นัต" class="card-img" onerror="this.src='https://placehold.co/400x250/9e2a2b/ffffff?text=Web+NTT'">
+                </div>
+                <b class="card-title">แอดมิน นัต </b>
+                <span class="card-desc">แอดมิน และ ผู้ดูแลเว็บไซต์/Add-on</span>
+            </div>
+
+            <!-- แอดมิน แซม -->
+            <div class="card" onclick="openTeamModal('แอดมิน แซม', 'ผู้ช่วยผู้ดูแล', 'แอดมิน และ ผู้พัฒนา Add-on', 'https://i.pinimg.com/736x/b3/d2/fa/b3d2faa9871036551a1ea44088769b0a.jpg', 'ผู้ช่วยดูแลระบบและนักพัฒนา Add-on ประจำทีมงาน ดูแลส่วนงานพัฒนาสคริปต์และแก้ไขบั๊ก', {
+                discord: 'https://discord.gg/VktVEGcQW4'
+            })">
+                <span class="badge-new">ผู้ช่วยผู้ดูแล</span>
+                <div class="img-wrapper">
+                    <img src="https://i.pinimg.com/736x/b3/d2/fa/b3d2faa9871036551a1ea44088769b0a.jpg" alt="แอดมิน แซม" class="card-img" onerror="this.src='https://placehold.co/400x250/9e2a2b/ffffff?text=Web+NTT'">
+                </div>
+                <b class="card-title">แอดมิน แซม </b>
+                <span class="card-desc">แอดมิน และ ผู้พัฒนา Add-on</span>
+            </div>
+        </div>
+
+        <div class="category-header">
+            <div class="category-header-left">
+                <img src="https://i.pinimg.com/originals/00/d4/fa/00d4fa4d0dd818876d77c2067cc8ce4b.gif" class="category-icon" alt="Website NTT">
+                <h2 class="category-title">Project </h2>
+            </div>
+        </div>
+
+        <div class="cards-grid">
+            <div class="card" onclick="openGeneralModal('ร้านค้า', 'ร้านค้า', 'รับทำสกิน รับปั้นโมเดล รับวาดรูป รับทำ Add-on สกิน', 'https://media.discordapp.net/attachments/1455048186539282482/1562029614971224177/file_000000009d148211aacbf831d267e270.png?ex=6ad9d271&is=6ad880f1&hm=ab076dea0924ee7d781207efdfc60ca4ffa0b15dbd2f5a52f5bdad53fd356034&=&format=webp&quality=lossless&width=640&height=640', 'ร้านค้าอย่างเป็นทางการ ให้บริการทำสกิน Minecraft, ปั้นโมเดล 3D, วาดภาพประกอบ และรับทำ Add-on ตามสั่ง สามารถเข้าชมดิสคอร์ดได้ที่ปุ่มด้านล่าง', 'https://discord.gg/VktVEGcQW4', 'ไปยังหน้ารายละเอียด ➔')">
+                <span class="badge-new">ร้านค้า</span>
+                <div class="img-wrapper">
+                    <img src="https://media.discordapp.net/attachments/1455048186539282482/1562029614971224177/file_000000009d148211aacbf831d267e270.png?ex=6ad9d271&is=6ad880f1&hm=ab076dea0924ee7d781207efdfc60ca4ffa0b15dbd2f5a52f5bdad53fd356034&=&format=webp&quality=lossless&width=640&height=640" alt="ร้านค้า" class="card-img" onerror="this.src='https://placehold.co/400x250/9e2a2b/ffffff?text=Web+NTT'">
+                </div>
+                <b class="card-title">ร้านค้า</b>
+                <span class="card-desc">รับทำสกินน รับปั้นโมเดล รับวาดรูป รับทำ Add-on สกิน</span>
+            </div>
+
+            <div class="card" onclick="openGeneralModal('เปลี่ยน UUID Add-on เองได้ง่าย', 'เวอร์ชั่น V.0.1', 'เปลี่ยน UUID Add-on เองได้ง่าย', 'https://i.pinimg.com/736x/b3/d2/fa/b3d2faa9871036551a1ea44088769b0a.jpg', 'เครื่องมือเปลี่ยน UUID ของไฟล์ Add-on ออนไลน์โดยอัตโนมัติ ช่วยป้องกันการชนกันของ UUID ในเกม Minecraft', 'cob.html', 'ไปยังหน้ารายละเอียด ➔')">
+                <span class="badge-new">เวอร์ชั่น V.0.1</span>
+                <div class="img-wrapper">
+                    <img src="https://i.pinimg.com/736x/b3/d2/fa/b3d2faa9871036551a1ea44088769b0a.jpg" alt="เปลี่ยน UUID Add-on" class="card-img" onerror="this.src='https://placehold.co/400x250/9e2a2b/ffffff?text=Web+NTT'">
+                </div>
+                <b class="card-title">เปลี่ยน UUID Add-on เองได้ง่าย</b>
+                <span class="card-desc">เปลี่ยน UUID Add-on เองได้ง่าย</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 1: ระบบเว็บไซต์ที่ทำเอง (ปุ่มขึ้นว่า: ไปยังเว็บไซต์ ➔) -->
+    <div class="section-container" data-category="websitentt">
+        <div class="category-header">
+            <div class="category-header-left">
+                <img src="https://i.pinimg.com/originals/00/d4/fa/00d4fa4d0dd818876d77c2067cc8ce4b.gif" class="category-icon" alt="Website NTT">
+                <h2 class="category-title">ระบบเว็บไซต์ที่ทำเอง</h2>
+            </div>
+            <span class="section-badge">New Arrivals</span>
+        </div>
+        
+        <div class="cards-grid">
+            <div class="card" onclick="openGeneralModal('ทำ Add-on เองได้ง่าย', 'เวอร์ชั่น V.5.2', 'ระบบ Universal Add-on Editor Pro v3.2 | ตกแต่งและจัดการข้อมูลโปรเจกต์แอดออนอย่างง่ายดาย', 'https://i.pinimg.com/736x/da/84/e9/da84e9a0cb59107211421425dcf05ca5.jpg', 'ระบบพัฒนาและจัดการโครงสร้าง Add-on ผ่านเว็บเบราว์เซอร์ ช่วยให้การสร้างสคริปต์และไอเทมทำได้สะดวกและรวดเร็ว', 'addon.html', 'ไปยังเว็บไซต์ ➔')">
+                <span class="badge-new">เวอร์ชั่น V.5.2</span>
+                <div class="img-wrapper">
+                    <img src="https://i.pinimg.com/736x/da/84/e9/da84e9a0cb59107211421425dcf05ca5.jpg" alt="ทำ Add-on เองได้ง่าย" class="card-img" onerror="this.src='https://placehold.co/400x250/9e2a2b/ffffff?text=Web+NTT'">
+                </div>
+                <div><span class="type-badge type-website">เว็บไซต์</span></div>
+                <b class="card-title">ทำ Add-on เองได้ง่าย </b>
+                <span class="card-desc">ระบบ Universal Add-on Editor Pro v3.2 | ตกแต่งและจัดการข้อมูลโปรเจกต์แอดออนอย่างง่ายดาย</span>
+            </div>
+
+            <div class="card" onclick="openGeneralModal('เปลี่ยน UUID Add-on เองได้ง่าย', 'เวอร์ชั่น V.0.1', 'เปลี่ยน UUID Add-on เองได้ง่าย', 'https://i.pinimg.com/736x/b3/d2/fa/b3d2faa9871036551a1ea44088769b0a.jpg', 'เครื่องมือเปลี่ยน UUID ของไฟล์ Add-on ออนไลน์โดยอัตโนมัติ ช่วยป้องกันการชนกันของ UUID ในเกม Minecraft', 'uuid_addon.html', 'ไปยังเว็บไซต์ ➔')">
+                <span class="badge-new">เวอร์ชั่น V.0.1</span>
+                <div class="img-wrapper">
+                    <img src="https://i.pinimg.com/736x/b3/d2/fa/b3d2faa9871036551a1ea44088769b0a.jpg" alt="เปลี่ยน UUID Add-on" class="card-img" onerror="this.src='https://placehold.co/400x250/9e2a2b/ffffff?text=Web+NTT'">
+                </div>
+                <div><span class="type-badge type-website">เว็บไซต์</span></div>
+                <b class="card-title">เปลี่ยน UUID Add-on เองได้ง่าย</b>
+                <span class="card-desc">เปลี่ยน UUID Add-on เองได้ง่าย</span>
+            </div>
+        </div>
+
+        <a href="contact_websitentt.html" class="btn-more">
+            ดูข้อมูลและรายการเก่าทั้งหมด ➔
+        </a>
+        <div class="clear"></div>
+    </div>
+
+    <!-- 3: Add-on ที่ทำเอง (ปุ่มขึ้นว่า: ดาวน์โหลด ➔) -->
+    <div class="section-container" data-category="addonntt">
+        <div class="category-header">
+            <div class="category-header-left">
+                <img src="https://i.pinimg.com/originals/ec/c3/fa/ecc3fad4fbe9d33d0c1b1b76102396b5.gif" class="category-icon" alt="Add-on NTT">
+                <h2 class="category-title">Add-on ที่ทำเอง</h2>
+            </div>
+            <span class="section-badge">New Arrivals</span>
+        </div>
+        
+        <div class="cards-grid">
+            <!-- 1. มีทั้ง BP และ RP -->
+            <div class="card" onclick="openGeneralModal('Add-on ชุบชีวิต', 'เวอร์ชั่น V.1.1', 'ส่วนเสริมชุบชีวิต', 'https://i.pinimg.com/736x/8b/32/46/8b32460ce984f596d5658692ff7fcac4.jpg', 'แอดออนช่วยชุบชีวิตผู้เล่นในเซิร์ฟเวอร์แบบกำหนดสถานะ พร้อมอนิเมชั่นขณะล้มและรอการช่วยเหลือ', 'https://www.mediafire.com/file/5fzo9lnlnmv7hp7/Oh%2521_my_player_is_dying.mcaddon/file', 'ดาวน์โหลด ➔')">
+                <span class="badge-new">เวอร์ชั่น V.1.1</span>
+                <div class="img-wrapper">
+                    <img src="https://i.pinimg.com/736x/8b/32/46/8b32460ce984f596d5658692ff7fcac4.jpg" alt="Great Wall Guard Addon" class="card-img" onerror="this.src='https://placehold.co/400x250/9e2a2b/ffffff?text=Addon+NTT'">
+                </div>
+                <div><span class="type-badge type-bprp">BP & RP Complete</span></div>
+                <b class="card-title">Add-on ชุบชีวิต </b>
+                <span class="card-desc">ส่วนเสริมชุบชีวิต</span>
+            </div>
+
+            <!-- 2. มีแค่ BP -->
+            <div class="card" onclick="openGeneralModal('Add-on หมอส่วนเสริม addon ชุบชีวิต เป็น Add-on ที่มี BP', 'เวอร์ชั่น V.0.2', 'ส่วนเสริม addonชุบชีวิต', 'https://i.pinimg.com/736x/04/07/47/0407470cf9528a3d942479ce0dc49343.jpg', 'ระบบย่อยสำหรับการทำงานคู่กับ Add-on ชุบชีวิต เพื่อเพิ่มอาชีพหมอและการรักษา', 'https://www.mediafire.com/file/969z77l5jq8oc6c/addon_%25E0%25B8%25AB%25E0%25B8%25A1%25E0%25B8%25AD%25E0%25B8%25AA%25E0%25B8%25B8%25E0%25B8%2599%25E0%25B9%2580%25E0%25B8%25AA%25E0%25B8%25A3%25E0%25B8%2594_addon_%25E0%25B8%258A%25E0%25B8%25B8%25E0%25B8%259A%25E0%25B8%258A%25E0%25B8%25B5%25E0%25B8%2597%25E0%25B8%25B4%25E0%25B8%2594_.mcaddon/file', 'ดาวน์โหลด ➔')">
+                <span class="badge-new">เวอร์ชั่น V.0.2</span>
+                <div class="img-wrapper">
+                    <img src="https://i.pinimg.com/736x/04/07/47/0407470cf9528a3d942479ce0dc49343.jpg" alt="Forbidden Auth Addon" class="card-img" onerror="this.src='https://placehold.co/400x250/9e2a2b/ffffff?text=Addon+NTT'">
+                </div>
+                <div><span class="type-badge type-rp">Behavior Pack</span></div>
+                <b class="card-title">Add-on หมอส่วนเสริม addonชุบชีวิต </b>
+                <span class="card-desc">ส่วนเสริม addonชุบชีวิต</span>
+            </div>
+
+            <!-- 3. มีแค่ RP -->
+            <div class="card" onclick="openGeneralModal('Add-on Emote ใหม่ V.2.2', 'เวอร์ชั่น V.2.2', 'ส่วนเสริม Emote เวอร์ชั่นไม่มีงอแข้งงอขา', 'https://i.pinimg.com/736x/e9/1a/11/e91a111629dd1e92fdbfb029bda45901.jpg', 'ระบบท่าทางแสดงอารมณ์ (Emotes) รูปแบบใหม่ ที่มีการปรับแต่งท่าทางให้เป็นธรรมชาติยิ่งขึ้น', 'https://www.mediafire.com/file/1ac5e575i0fu34u/Emote_%25E0%25B9%2583%25E0%25B8%25AB%25E0%25B8%25A1%25E0%25B9%2588_V.2.2.mcaddon/file', 'ดาวน์โหลด ➔')">
+                <span class="badge-new">เวอร์ชั่น V.2.2</span>
+                <div class="img-wrapper">
+                    <img src="https://i.pinimg.com/736x/e9/1a/11/e91a111629dd1e92fdbfb029bda45901.jpg" alt="Forbidden Auth Addon" class="card-img" onerror="this.src='https://placehold.co/400x250/9e2a2b/ffffff?text=Addon+NTT'">
+                </div>
+                <div><span class="type-badge type-bprp">BP & RP Complete</span></div>
+                <b class="card-title">Add-on Emote ใหม่ V.2.2</b>
+                <span class="card-desc">ส่วนเสริม Emote เวอร์ชั่นไม่มีงอแข้งงอขา</span>
+            </div>
+
+            <!-- 4. มีทั้ง BP และ RP -->
+            <div class="card" onclick="openGeneralModal('Add-on ปรับส่วนสูง&อุ้ม', 'เวอร์ชั่น V.1', 'ส่วนเสริม ปรับส่วนสูง&อุ้ม', 'https://i.pinimg.com/736x/ca/81/7c/ca817cd3c965ef82ef187d70df52022c.jpg', 'ระบบปรับระดับส่วนสูงของตัวละครผู้เล่นตามต้องการ พร้อมฟังก์ชันในการอุ้มตัวละครอื่น', 'https://www.mediafire.com/file/sz11m817qw0ciho/%25E0%25B8%259B%25E0%25B8%25A3%25E0%25B8%25B1%25E0%25B8%259A%25E0%25B8%25AA%25E0%25B8%25A3%25E0%25B8%2599%25E0%25B8%2599%25E0%25B8%25AA%25E0%25B8%25B9%25E0%25B8%2588%2526%25E0%25B8%25AD%25E0%25B8%25B8%25E0%25B9%2589%25E0%25B8%25A1.mcaddon/file', 'ดาวน์โหลด ➔')">
+                <span class="badge-new">เวอร์ชั่น V.1</span>
+                <div class="img-wrapper">
+                    <img src="https://i.pinimg.com/736x/ca/81/7c/ca817cd3c965ef82ef187d70df52022c.jpg" alt="Forbidden Auth Addon" class="card-img" onerror="this.src='https://placehold.co/400x250/9e2a2b/ffffff?text=Addon+NTT'">
+                </div>
+                <div><span class="type-badge type-bprp">BP & RP Complete</span></div>
+                <b class="card-title">Add-on ปรับส่วนสูง&อุ้ม </b>
+                <span class="card-desc">ส่วนเสริม ปรับส่วนสูง&อุ้ม </span>
+            </div>
+
+            <!-- 5. มีแค่ BP -->
+            <div class="card" onclick="openGeneralModal('Add-on K-Crafting System', 'เวอร์ชั่น V.1.2', 'ส่วนเสริม Add-on ใช้กล่องคราฟของแบบ setting เองได้', 'https://i.pinimg.com/736x/ea/82/d6/ea82d64c3163f26bdb47bd74b1226995.jpg', 'ระบบกล่องคราฟต์ไอเทมที่ผู้ดูแลสามารถตั้งค่าสูตรการคราฟต์และไอเทมที่ต้องการผ่านไฟล์ Config ได้ด้วยตนเอง', 'https://www.mediafire.com/file/9lbpg7bgnn22ln3/Add-on_%25E0%25B9%2583%25E0%25B8%2588%25E0%25B9%2588%25E0%25B8%2581%25E0%25B8%25A5%25E0%25B8%258F%25E0%25B8%2584%25E0%25B8%25A3%25E0%25B8%25B2%25E0%25B8%259F%25E0%25B8%2582%25E0%25B8%25AD%25E0%25B8%2587%25E0%25B9%2581%25E0%25B8%259A%25E0%25B8%259A_setting_%25E0%25B9%2580%25E0%25B8%25AD%25E0%25B8%2587%25E0%25B9%2584%25E0%25B8%2594%25E0%25B9%2589.mcaddon/file', 'ดาวน์โหลด ➔')">
+                <span class="badge-new">เวอร์ชั่น V.1.2</span>
+                <div class="img-wrapper">
+                    <img src="https://i.pinimg.com/736x/ea/82/d6/ea82d64c3163f26bdb47bd74b1226995.jpg" alt="Forbidden Auth Addon" class="card-img" onerror="this.src='https://placehold.co/400x250/9e2a2b/ffffff?text=Addon+NTT'">
+                </div>
+                <div><span class="type-badge type-rp">Behavior Pack</span></div>
+                <b class="card-title">Add-on K-Crafting System</b>
+                <span class="card-desc">ส่วนเสริม Add-on ใช้กล่องคราฟของแบบ setting เองได้</span>
+            </div>
+
+            <!-- 6. มีแค่ BP -->
+            <div class="card" onclick="openGeneralModal('Add-on ร้านค้าแบบใช้คำสั่ง', 'เวอร์ชั่น V.1.2', 'ส่วนเสริม ร้านค้าแบบใช้คำสั่ง setting ในโค้ด เองได้', 'https://i.pinimg.com/736x/9d/b8/0a/9db80afe4fe87f8cb0c23738b7ce8fac.jpg', 'ระบบร้านค้าสำหรับการแลกเปลี่ยนซื้อขายไอเทมผ่านชุดคำสั่ง ควบคุมการซื้อขายและการกำหนดราคาในไฟล์สคริปต์', 'https://www.mediafire.com/file/nmo1dgdcfwjion1/Mimi_Exchange_Shop.mcaddon/file', 'ดาวน์โหลด ➔')">
+                <span class="badge-new">เวอร์ชั่น V.1.2</span>
+                <div class="img-wrapper">
+                    <img src="https://i.pinimg.com/736x/9d/b8/0a/9db80afe4fe87f8cb0c23738b7ce8fac.jpg" alt="Forbidden Auth Addon" class="card-img" onerror="this.src='https://placehold.co/400x250/9e2a2b/ffffff?text=Addon+NTT'">
+                </div>
+                <div><span class="type-badge type-rp">Behavior Pack</span></div>
+                <b class="card-title">Add-on ร้านค้าแบบใช้คำสั่ง</b>
+                <span class="card-desc">ส่วนเสริม ร้านค้าแบบใช้คำสั่ง setting ในโค้ด เองได้</span>
+            </div>
+        </div>
+
+        <a href="contact_addonntt.html" class="btn-more">
+            ดูข้อมูลและรายการเก่าทั้งหมด ➔
+        </a>
+        <div class="clear"></div>
+    </div>
+
+    <!-- 4: Add-on ที่สนใจ (ปุ่มขึ้นว่า: ไปยังหน้ารายละเอียด ➔) -->
+    <div class="section-container" data-category="addon">
+        <div class="category-header">
+            <div class="category-header-left">
+                <img src="https://i.pinimg.com/originals/a6/21/0f/a6210fd59c68852a3143ccde924e6cf2.gif" class="category-icon" alt="Add-on Interest">
+                <h2 class="category-title">Add-on ที่สนใจ</h2>
+            </div>
+            <span class="section-badge">New Arrivals</span>
+        </div>
+        
+        <div class="cards-grid">
+            <div class="card" onclick="openGeneralModal('v1.0.2-Anglers_Desire_Addon', 'ยังไม่ได้อัพเดท', 'เป็นแอดอรตกปลาที่มีลูกเล่นพิเศษสามารถทดลองไปเล่นได้ส่วนรายละเอียดอย่างอื่นลองดาวน์โหลดดู', 'https://i.pinimg.com/736x/3d/f8/5b/3df85bc5125c23d44ee105ca8ef63e1e.jpg', 'เป็นแอดอรตกปลาที่มีลูกเล่นพิเศษสามารถทดลองไปเล่นได้ส่วนรายละเอียดอย่างอื่นลองดาวน์โหลดดู', 'https://www.mediafire.com/file/rz3lwivdrft30dg/v1.0.2-Anglers_Desire_Addon.mcaddon/file', 'ดาวน์โหลด ➔')">
+                <span class="badge-new">ยังไม่ได้อัพเดท</span>
+                <div class="img-wrapper">
+                    <img src="https://i.pinimg.com/736x/3d/f8/5b/3df85bc5125c23d44ee105ca8ef63e1e.jpg" alt="Bund Analytics Addon" class="card-img" onerror="this.src='https://placehold.co/400x250/9e2a2b/ffffff?text=Addon'">
+                </div>
+                <div><span class="type-badge type-bprp">BP & RP Complete</span></div>
+                <b class="card-title">Anglers_Desire_Addon</b>
+                <span class="card-desc">เป็นแอดอรตกปลาที่มีลูกเล่นพิเศษสามารถทดลองไปเล่นได้ส่วนรายละเอียดอย่างอื่นลองดาวน์โหลดดู</span>
+            </div>
+
+            <div class="card" onclick="openGeneralModal('Add-on ออกรายงาน PDF/Excel Auto (Jiuzhai Export)', 'ยังไม่ได้อัพเดท', 'ส่วนเสริมแปลงข้อมูลบนตารางออกมาเป็นไฟล์ PDF หรือ Excel ตกแต่งสวยงาม', 'https://i.pinimg.com/originals/a0/b8/50/a0b850a65414aef5426d63e443de2e5f.gif', 'ส่วนเสริมจัดการข้อมูล แปลงตารางหน้าเว็บให้อยู่ในรูปแบบเอกสาร PDF หรือสเปรดชีต Excel อัตโนมัติ', 'contact.html', 'ไปยังหน้ารายละเอียด ➔')">
+                <span class="badge-new">ยังไม่ได้อัพเดท</span>
+                <div class="img-wrapper">
+                    <img src="https://i.pinimg.com/originals/a0/b8/50/a0b850a65414aef5426d63e443de2e5f.gif" alt="Juizhai Export Addon" class="card-img" onerror="this.src='https://placehold.co/400x250/9e2a2b/ffffff?text=Addon'">
+                </div>
+                <div><span class="type-badge type-n">ไม่มี</span></div>
+                <b class="card-title">Add-on ออกรายงาน PDF/Excel Auto (Jiuzhai Export)</b>
+                <span class="card-desc">ส่วนเสริมแปลงข้อมูลบนตารางออกมาเป็นไฟล์ PDF หรือ Excel ตกแต่งสวยงาม</span>
+            </div>
+        </div>
+
+        <a href="contact_addon.html" class="btn-more">
+            ดูข้อมูลและรายการเก่าทั้งหมด ➔
+        </a>
+        <div class="clear"></div>
+    </div>
+
+    <!-- โครงสร้าง Pop-up Modal -->
+    <div id="infoModal" class="modal-overlay" onclick="closeModal(event)">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal(event)">&times;</span>
+            <div class="modal-img-wrapper">
+                <img id="modalImg" class="modal-img" src="" alt="รูปปก">
+            </div>
+            <span id="modalBadge" class="modal-badge">แท็ก</span>
+            <h3 id="modalTitle" class="modal-title">หัวข้อ</h3>
+            <p id="modalDesc" class="modal-desc">คำอธิบายย่อ</p>
+            <div id="modalDetailBox" class="modal-detail-box">รายละเอียด...</div>
+
+            <!-- กล่องปุ่มลิงก์โซเชียลทีมงาน -->
+            <div id="socialBox" class="social-container" style="display: none;">
+                <a id="btnYt" href="#" class="social-btn btn-yt" target="_blank" style="display: none;">YouTube</a>
+                <a id="btnFb" href="#" class="social-btn btn-fb" target="_blank" style="display: none;">Facebook</a>
+                <a id="btnIg" href="#" class="social-btn btn-ig" target="_blank" style="display: none;">Instagram</a>
+                <a id="btnTt" href="#" class="social-btn btn-tt" target="_blank" style="display: none;">TikTok</a>
+                <a id="btnX"  href="#" class="social-btn btn-x"  target="_blank" style="display: none;">X</a>
+                <a id="btnDc" href="#" class="social-btn btn-dc" target="_blank" style="display: none;">Discord</a>
+            </div>
+
+            <!-- ปุ่มลิงก์สำหรับรายการทั่วไป (ข้อความเปลี่ยนตามหมวดหมู่) -->
+            <a id="modalLinkBtn" href="#" class="modal-btn-link" target="_blank" style="display: none;">ไปยังหน้ารายละเอียด ➔</a>
+        </div>
+    </div>
+
+    <!-- Script ควบคุมการทำงาน -->
+    <script>
+        let selectedCategory = 'all';
+
+        function filterCategory(category, btn) {
+            selectedCategory = category;
+            
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            filterItems();
+        }
+
+        function filterItems() {
+            const searchText = document.getElementById('searchInput').value.toLowerCase().trim();
+            const sections = document.querySelectorAll('.section-container');
+            let totalVisibleCards = 0;
+
+            sections.forEach(section => {
+                const sectionCategory = section.getAttribute('data-category');
+                const matchesCategory = (selectedCategory === 'all' || selectedCategory === sectionCategory);
+                
+                const cards = section.querySelectorAll('.card');
+                let visibleCardsInSection = 0;
+
+                cards.forEach(card => {
+                    const title = card.querySelector('.card-title').textContent.toLowerCase();
+                    const desc = card.querySelector('.card-desc').textContent.toLowerCase();
+                    const matchesSearch = title.includes(searchText) || desc.includes(searchText);
+
+                    if (matchesCategory && matchesSearch) {
+                        card.style.display = 'flex';
+                        visibleCardsInSection++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                if (visibleCardsInSection > 0) {
+                    section.style.display = 'block';
+                    totalVisibleCards += visibleCardsInSection;
+                } else {
+                    section.style.display = 'none';
+                }
+            });
+
+            const noResults = document.getElementById('noResults');
+            if (totalVisibleCards === 0) {
+                noResults.style.display = 'block';
+            } else {
+                noResults.style.display = 'none';
+            }
+        }
+
+        // ฟังก์ชันเปิด Modal สำหรับทีมงาน
+        function openTeamModal(title, badge, desc, imgSrc, detail, socials) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalBadge').textContent = badge;
+            document.getElementById('modalDesc').textContent = desc;
+            document.getElementById('modalImg').src = imgSrc;
+            document.getElementById('modalDetailBox').textContent = detail;
+
+            // ซ่อนปุ่มลิงก์ทั่วไป
+            document.getElementById('modalLinkBtn').style.display = 'none';
+
+            // แสดงกล่องโซเชียล
+            const socialBox = document.getElementById('socialBox');
+            socialBox.style.display = 'flex';
+
+            const socialList = [
+                { id: 'btnYt', link: socials.youtube },
+                { id: 'btnFb', link: socials.facebook },
+                { id: 'btnIg', link: socials.ig },
+                { id: 'btnTt', link: socials.tiktok },
+                { id: 'btnX',  link: socials.x },
+                { id: 'btnDc', link: socials.discord }
+            ];
+
+            socialList.forEach(item => {
+                const btn = document.getElementById(item.id);
+                if (item.link) {
+                    btn.href = item.link;
+                    btn.style.display = 'inline-flex';
+                } else {
+                    btn.style.display = 'none';
+                }
+            });
+
+            document.getElementById('infoModal').classList.add('active');
+        }
+
+        // ฟังก์ชันเปิด Modal สำหรับรายการทั่วไป (รองรับการเปลี่ยนข้อความบนปุ่ม)
+        function openGeneralModal(title, badge, desc, imgSrc, detail, linkUrl, btnText) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalBadge').textContent = badge;
+            document.getElementById('modalDesc').textContent = desc;
+            document.getElementById('modalImg').src = imgSrc;
+            document.getElementById('modalDetailBox').textContent = detail;
+
+            // ซ่อนกล่องโซเชียล
+            document.getElementById('socialBox').style.display = 'none';
+
+            // แสดงปุ่มลิงก์และกำหนดข้อความตามที่ส่งมา
+            const linkBtn = document.getElementById('modalLinkBtn');
+            if (linkUrl && linkUrl !== '#' && linkUrl !== '') {
+                linkBtn.href = linkUrl;
+                linkBtn.textContent = btnText || 'ไปยังหน้ารายละเอียด ➔';
+                linkBtn.style.display = 'inline-block';
+            } else {
+                linkBtn.style.display = 'none';
+            }
+
+            document.getElementById('infoModal').classList.add('active');
+        }
+
+        function closeModal(event) {
+            if (event.target.classList.contains('modal-overlay') || event.target.classList.contains('modal-close')) {
+                document.getElementById('infoModal').classList.remove('active');
+            }
+        }
+
+        const scrollToTopBtn = document.getElementById("scrollToTopBtn");
+
+        window.onscroll = function() {
+            if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+                scrollToTopBtn.classList.add("show");
+            } else {
+                scrollToTopBtn.classList.remove("show");
+            }
+        };
+
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+        }
+    </script>
+</body>
+</html>

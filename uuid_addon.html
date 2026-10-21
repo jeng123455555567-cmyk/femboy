@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>Kacha Tool - ระบบซิงค์ ID อัจฉริยะ (RP/BP Link)</title>
+
+    <link rel="icon" href="https://media.discordapp.net/attachments/1283550912240943116/1286293143519625227/a1b95347-2363-4d8b-8dfe-e79787d846a4.gif?ex=6ad8a6d7&is=6ad75557&hm=3d7dd724463a35afce4d33c53e72dd2d299f7e0543887787bde2542167133c56&=&width=384&height=384" type="image/png">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #0d0f11;
+            --container-bg: #16191d;
+            --primary-gold: #c5a02d;
+            --text-main: #e2e8f0;
+            --text-dim: #94a3b8;
+            --border: #2d333b;
+        }
+
+        body { 
+            font-family: 'Kanit', sans-serif; 
+            background: var(--bg-color); 
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container { 
+            background: var(--container-bg); 
+            padding: 40px; 
+            border-radius: 16px; 
+            border: 1px solid var(--border);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            max-width: 500px; 
+            width: 90%;
+        }
+
+        h2 { 
+            text-align: center; 
+            font-weight: 500;
+            color: var(--primary-gold);
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .sub-title {
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-dim);
+            margin-bottom: 30px;
+            text-transform: uppercase;
+        }
+
+        .input-group { margin-bottom: 20px; }
+
+        label { 
+            display: block; 
+            font-size: 13px;
+            color: var(--text-dim);
+            margin-bottom: 8px;
+        }
+
+        input[type="text"], input[type="file"] { 
+            width: 100%; 
+            padding: 12px; 
+            background: #000;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: #fff;
+            box-sizing: border-box;
+        }
+
+        button { 
+            width: 100%; 
+            padding: 15px; 
+            background: var(--primary-gold);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .status-msg { 
+            text-align: center;
+            font-size: 13px;
+            margin-top: 15px;
+            color: #63b3ed;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <form action="about.html">
+                <button type="submit" class="btn-cn">
+                    <span>← ย้อนกลับ</span>
+                </button>
+            </form>
+    <h2>CORE SYSTEM</h2>
+    <div class="sub-title">UUID Synchronization Active</div>
+    
+    <div class="input-group">
+        <label>เลือกไฟล์ (.ZIP) ที่มี RP และ BP</label>
+        <input type="file" id="zipInput" accept=".zip">
+        <div id="status" class="status-msg">ระบบพร้อมทำงาน</div>
+    </div>
+
+    <div class="input-group">
+        <label>ชื่อโปรเจกต์ใหม่</label>
+        <input type="text" id="skinName" placeholder="ระบุชื่อ...">
+    </div>
+
+    <div class="input-group">
+        <label>คำอธิบาย</label>
+        <input type="text" id="description" placeholder="ระบุรายละเอียด...">
+    </div>
+
+    <button onclick="processZip()">อัปเดตและเชื่อมโยง ID ทั้งหมด</button>
+</div>
+
+<script>
+function generateUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random()*16|0, v = c=='x'?r:(r&0x3|0x8);
+        return v.toString(16);
+    });
+}
+
+document.getElementById('zipInput').addEventListener('change', async function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    try {
+        const zip = await JSZip.loadAsync(file);
+        for (let filename of Object.keys(zip.files)) {
+            if (filename.endsWith("manifest.json")) {
+                const content = await zip.files[filename].async("string");
+                const manifest = JSON.parse(content);
+                document.getElementById('skinName').value = manifest.header.name || "";
+                document.getElementById('description').value = manifest.header.description || "";
+                document.getElementById('status').innerText = "✅ ตรวจพบโครงสร้างไฟล์เรียบร้อย";
+                break;
+            }
+        }
+    } catch (err) { console.error(err); }
+});
+
+async function processZip() {
+    const input = document.getElementById('zipInput');
+    const skinName = document.getElementById('skinName').value;
+    const desc = document.getElementById('description').value;
+
+    if (!input.files.length) { alert("กรุณาเลือกไฟล์"); return; }
+
+    const file = input.files[0];
+    const zip = await JSZip.loadAsync(file);
+    const uuidMap = {}; // หัวใจสำคัญ: เก็บ Map ของ ID ทั้งหมดในโปรเจกต์
+
+    // ขั้นตอนที่ 1: รวบรวม UUID ทั้งหมดที่มีการประกาศใช้ใน Header (ที่เป็น ID หลัก)
+    // และ UUID ใน Module จากทุกไฟล์ manifest.json ใน zip
+    for (let filename of Object.keys(zip.files)) {
+        if (filename.endsWith("manifest.json")) {
+            let content = await zip.files[filename].async("string");
+            const uuidRegex = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi;
+            const foundUUIDs = content.match(uuidRegex);
+            
+            if (foundUUIDs) {
+                foundUUIDs.forEach(oldUuid => {
+                    // ถ้ายังไม่มีใน Map ให้สร้าง ID ใหม่คู่ไว้เลย
+                    if (!uuidMap[oldUuid]) {
+                        uuidMap[oldUuid] = generateUUID();
+                    }
+                });
+            }
+        }
+    }
+
+    // ขั้นตอนที่ 2: แทนที่ UUID ในทุกไฟล์ รวมถึงไฟล์สคริปต์
+    // การทำแบบนี้จะทำให้ ID ที่เชื่อมกันระหว่าง RP และ BP เปลี่ยนเป็นค่าใหม่ที่ "ตรงกัน" เสมอ
+    for (let filename of Object.keys(zip.files)) {
+        if (filename.endsWith("manifest.json") || filename.endsWith(".js") || filename.endsWith(".json")) {
+            let content = await zip.files[filename].async("string");
+            let isModified = false;
+
+            // ถ้าเป็น manifest ให้เปลี่ยนชื่อ/คำอธิบายด้วย
+            if (filename.endsWith("manifest.json")) {
+                try {
+                    let manifest = JSON.parse(content);
+                    manifest.header.name = skinName;
+                    manifest.header.description = desc;
+                    if (manifest.modules) {
+                        manifest.modules.forEach(m => { if(m.description) m.description = desc; });
+                    }
+                    content = JSON.stringify(manifest, null, 2);
+                    isModified = true;
+                } catch(e) { console.warn("Parse error in: " + filename); }
+            }
+
+            // แทนที่ UUID ทุกตัวที่ตรวจเจอในขั้นแรก
+            for (let oldUuid in uuidMap) {
+                if (content.includes(oldUuid)) {
+                    content = content.replace(new RegExp(oldUuid, "g"), uuidMap[oldUuid]);
+                    isModified = true;
+                }
+            }
+
+            if (isModified) {
+                zip.file(filename, content);
+            }
+        }
+    }
+
+    const cleanName = skinName.replace(/§[0-9a-fk-or]/g, "").trim() || "output";
+    const blob = await zip.generateAsync({type:"blob"});
+    saveAs(blob, `${cleanName}.zip`);
+    document.getElementById('status').innerText = "🚀 ซิงค์ ID และส่งออกไฟล์สำเร็จ!";
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ศูนย์รวมระบบงานและ Add-on ที่ฝาก</title>
+
+    <link rel="icon" href="https://media.discordapp.net/attachments/1283550912240943116/1286293143519625227/a1b95347-2363-4d8b-8dfe-e79787d846a4.gif?ex=6ad8a6d7&is=6ad75557&hm=3d7dd724463a35afce4d33c53e72dd2d299f7e0543887787bde2542167133c56&=&width=384&height=384" type="image/png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cn-red: #9e2a2b;
+            --cn-red-light: #be3a3c;
+            --cn-gold: #c5a059;
+            --cn-gold-light: #fefae0;
+            --cn-dark: #2b1e1e;
+            --bg-color: #faf6f0;
+            --card-bg: #ffffff;
+            --border-color: #e6d7c3;
+            --shadow: 0 4px 15px rgba(0,0,0,0.06);
+            --shadow-hover: 0 10px 25px rgba(158, 42, 43, 0.15);
+            --badge-new: #d90429;
+        }
+
+        * {
+            box-sizing: border-box;
+            transition: all 0.25s ease;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            font-family: 'Sarabun', sans-serif;
+            margin: 0;
+            padding: 40px 20px;
+            color: var(--cn-dark);
+            scroll-behavior: smooth; /* ทำให้เลื่อนขึ้นแบบนุ่มนวล */
+        }
+
+        .main-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* --- Header Section --- */
+        .header-section {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 25px auto;
+        }
+
+        .header-icon {
+            width: 65px;
+            height: auto;
+            margin-bottom: 12px;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+        }
+
+        .main-title {
+            color: var(--cn-red);
+            font-size: 32px;
+            font-weight: 700;
+            margin: 0 0 8px 0;
+            letter-spacing: -0.5px;
+        }
+
+        .main-subtitle {
+            color: #666;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        .top-nav {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 25px;
+        }
+
+        .btn-back {
+            background-color: #ffffff;
+            color: var(--cn-red);
+            border: 1.5px solid var(--cn-red);
+            padding: 10px 22px;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 20px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-back:hover {
+            background-color: var(--cn-red);
+            color: #ffffff;
+            transform: translateY(-2px);
+        }
+
+        /* --- Creator Info Card --- */
+        .creator-card {
+            background-color: var(--card-bg);
+            max-width: 500px;
+            margin: 0 auto 40px auto;
+            padding: 30px;
+            border: 2px solid var(--cn-gold);
+            border-radius: 18px;
+            box-shadow: var(--shadow-hover);
+            text-align: center;
+        }
+
+        .creator-icon {
+            width: 60px;
+            height: auto;
+            margin-bottom: 10px;
+        }
+
+        .creator-title {
+            color: var(--cn-red);
+            font-size: 22px;
+            font-weight: 700;
+            margin: 0 0 15px 0;
+            padding-bottom: 8px;
+            border-bottom: 2px dashed var(--cn-gold);
+        }
+
+        .info-group {
+            text-align: left;
+            margin-bottom: 20px;
+            font-size: 15px;
+            line-height: 1.8;
+        }
+
+        .info-label {
+            font-weight: 700;
+            color: var(--cn-red);
+        }
+
+        .info-link {
+            color: #b91c1c;
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .info-link:hover {
+            text-decoration: underline;
+        }
+
+        .btn-cn {
+            background: linear-gradient(135deg, var(--cn-red), var(--cn-red-light));
+            color: var(--cn-gold-light);
+            border: 1px solid var(--cn-gold);
+            padding: 10px;
+            width: 100%;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(158, 42, 43, 0.2);
+        }
+
+        .btn-cn:hover {
+            background: var(--cn-dark);
+            color: var(--cn-gold);
+            transform: translateY(-2px);
+        }
+
+        /* --- Filter & Search Section --- */
+        .filter-section {
+            margin: 0 auto 35px auto;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            align-items: center;
+        }
+
+        .search-box {
+            position: relative;
+            width: 100%;
+            max-width: 550px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 14px 24px;
+            font-size: 15px;
+            font-family: 'Sarabun', sans-serif;
+            border: 2px solid var(--border-color);
+            border-radius: 30px;
+            outline: none;
+            background-color: #ffffff;
+            box-shadow: var(--shadow);
+        }
+
+        .search-input:focus {
+            border-color: var(--cn-red);
+            box-shadow: 0 6px 20px rgba(158, 42, 43, 0.12);
+        }
+
+        .category-filter-container {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .filter-btn {
+            background-color: #ffffff;
+            border: 1.5px solid var(--cn-gold);
+            color: var(--cn-dark);
+            padding: 9px 20px;
+            border-radius: 20px;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background-color: var(--cn-red);
+            color: #ffffff;
+            border-color: var(--cn-red);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(158, 42, 43, 0.25);
+        }
+
+        /* --- Section Container --- */
+        .section-container {
+            margin-bottom: 40px;
+            background-color: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(8px);
+            padding: 28px;
+            border-radius: 18px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 22px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--cn-gold);
+        }
+
+        .category-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .category-icon {
+            width: 34px;
+            height: 34px;
+            object-fit: contain;
+        }
+
+        .category-title {
+            color: var(--cn-red);
+            font-size: 22px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .section-badge {
+            background-color: var(--cn-gold-light);
+            color: var(--cn-dark);
+            border: 1px solid var(--cn-gold);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* --- Cards Grid --- */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 22px;
+            margin-bottom: 22px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 14px;
+            box-shadow: var(--shadow);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--cn-gold);
+        }
+
+        .badge-new {
+            position: absolute;
+            top: 22px;
+            right: 22px;
+            background-color: var(--badge-new);
+            color: #ffffff;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 9px;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(217, 4, 41, 0.4);
+            z-index: 2;
+            letter-spacing: 0.5px;
+        }
+
+        .img-wrapper {
+            width: 100%;
+            height: 140px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 12px;
+            position: relative;
+            background-color: #f0e9df;
+        }
+
+        .card-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .card:hover .card-img {
+            transform: scale(1.08);
+        }
+
+        .card-title {
+            color: var(--cn-red);
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            display: block;
+            text-decoration: none;
+            line-height: 1.4;
+        }
+
+        .card-desc {
+            color: #555;
+            font-size: 13px;
+            line-height: 1.5;
+            flex-grow: 1;
+        }
+
+        /* --- Footer Button in Section --- */
+        .btn-more {
+            background: linear-gradient(135deg, var(--cn-red), var(--cn-red-light));
+            color: #ffffff;
+            border: 1px solid var(--cn-gold);
+            padding: 10px 24px;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 20px;
+            cursor: pointer;
+            float: right;
+            box-shadow: 0 4px 12px rgba(158, 42, 43, 0.22);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-more:hover {
+            background: var(--cn-dark);
+            color: var(--cn-gold);
+            transform: translateX(3px);
+        }
+
+        .clear {
+            clear: both;
+        }
+
+        .no-results {
+            text-align: center;
+            font-size: 16px;
+            color: #777;
+            padding: 40px 20px;
+            background-color: #ffffff;
+            border-radius: 16px;
+            margin: 0 auto;
+            border: 1px dashed var(--border-color);
+            display: none;
+        }
+
+        /* --- Scroll to Top Button Style --- */
+        .scrollToTopBtn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, var(--cn-red), var(--cn-red-light));
+            color: var(--cn-gold-light);
+            border: 2px solid var(--cn-gold);
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(158, 42, 43, 0.3);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+
+        .scrollToTopBtn.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .scrollToTopBtn:hover {
+            background: var(--cn-dark);
+            color: var(--cn-gold);
+            transform: translateY(-4px);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 12px;
+            }
+            .main-title {
+                font-size: 25px;
+            }
+            .section-container {
+                padding: 18px;
+            }
+            .cards-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                gap: 14px;
+            }
+            .img-wrapper {
+                height: 110px;
+            }
+            .scrollToTopBtn {
+                bottom: 20px;
+                right: 20px;
+                width: 42px;
+                height: 42px;
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ปุ่มเลื่อนขึ้นด้านบนสุด -->
+    <button type="button" id="scrollToTopBtn" class="scrollToTopBtn" onclick="scrollToTop()" title="เลื่อนขึ้นด้านบน">▲</button>
+
+    <div class="main-wrapper">
+
+        <!-- Header -->
+        <div class="header-section">
+            <img src="https://i.pinimg.com/originals/31/13/22/31132288733f70e7c05d10bc3a104f59.gif" alt="Star Icon" class="header-icon"><br>
+            <h1 class="main-title">ศูนย์รวมระบบงานและ Add-on ที่ฝาก</h1>
+        </div>
+
+        <!-- ข้อมูลผู้จัดทำ -->
+        <div class="creator-card">
+            <img src="https://i.pinimg.com/originals/e1/a3/11/e1a311b494e0e5b9c19fffeae33e395a.gif" class="creator-icon" alt="Cat Icon">
+            <h1 class="creator-title">ชี้แจง</h1>
+        
+            <div class="info-group">
+                <p><span class="info-label">ประกาศ :</span>ขณะนี้ยังไม่มีการอัพเดทข้อมูลเพิ่มเติมในระบบ กรุณารอประกาศอย่างเป็นทางการอีกครั้ง</p>
+                <p><span class="info-label">ลิขสิทธิ์:</span> ประกาศลิขสิทธิ์ / Copyright Notice: ระบบ โค้ด และไฟล์ผลงานทั้งหมด ได้รับการคุ้มครองตาม พ.ศ. 2537 โดย © 2026 Nuttsumechan ห้ามมิให้ทำการคัดลอก ดัดแปลง แก้ไข หรือแจกจ่ายโดยมิได้รับอนุญาต</p>
+                <p><span class="info-label">ช่องทางอื่นๆ:</span> <a href="momo.html" class="info-link">ดูรายละเอียดเพิ่มเติม</a></p>
+            </div>
+
+            <form action="about.html">
+                <button type="submit" class="btn-cn">← ย้อนกลับ</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Script ควบคุมการกรอง การค้นหา ปุ่ม Scroll to Top -->
+    <script>
+        let selectedCategory = 'all';
+
+        function filterCategory(category, btn) {
+            selectedCategory = category;
+            
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            filterItems();
+        }
+
+        function filterItems() {
+            const searchText = document.getElementById('searchInput').value.toLowerCase().trim();
+            const sections = document.querySelectorAll('.section-container');
+            let totalVisibleCards = 0;
+
+            sections.forEach(section => {
+                const sectionCategory = section.getAttribute('data-category');
+                const matchesCategory = (selectedCategory === 'all' || selectedCategory === sectionCategory);
+                
+                const cards = section.querySelectorAll('.card');
+                let visibleCardsInSection = 0;
+
+                cards.forEach(card => {
+                    const title = card.querySelector('.card-title').textContent.toLowerCase();
+                    const desc = card.querySelector('.card-desc').textContent.toLowerCase();
+                    const matchesSearch = title.includes(searchText) || desc.includes(searchText);
+
+                    if (matchesCategory && matchesSearch) {
+                        card.style.display = 'flex';
+                        visibleCardsInSection++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                if (visibleCardsInSection > 0) {
+                    section.style.display = 'block';
+                    totalVisibleCards += visibleCardsInSection;
+                } else {
+                    section.style.display = 'none';
+                }
+            });
+
+            const noResults = document.getElementById('noResults');
+            if (totalVisibleCards === 0) {
+                noResults.style.display = 'block';
+            } else {
+                noResults.style.display = 'none';
+            }
+        }
+
+        function goToContact(category) {
+            const searchText = document.getElementById('searchInput').value.trim();
+            let targetUrl = `contact.html?category=${encodeURIComponent(category)}`;
+            
+            if (searchText) {
+                targetUrl += `&search=${encodeURIComponent(searchText)}`;
+            }
+
+            window.location.href = targetUrl;
+        }
+
+        // จัดการแสดง/ซ่อนปุ่ม Scroll to Top และสั่งเลื่อนขึ้นบนสุด
+        const scrollToTopBtn = document.getElementById("scrollToTopBtn");
+
+        window.onscroll = function() {
+            if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+                scrollToTopBtn.classList.add("show");
+            } else {
+                scrollToTopBtn.classList.remove("show");
+            }
+        };
+
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+        }
+    </script>
+</body>
+</html>

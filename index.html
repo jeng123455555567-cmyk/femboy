@@ -1,5 +1,165 @@
-<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NUTT | Dashboard</title><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script></head><body data-page="dashboard">
-<header class="topbar"><a class="brand" href="index.html" style="text-decoration:none"><i class="fa-solid fa-heart-pulse"></i> NUTT <small>& FEMBOY DASHBOARD 💕</small></a><nav class="nav">
-<a href="index.html" class="active">แดชบอร์ด</a><a href="calculator.html" class="">คำนวณ BMI</a><a href="workout.html" class="">เช็กลิสต์</a><a href="calendar.html" class="">ปฏิทิน</a><a href="portfolio.html" class="">คลังพอร์ต IT</a><a href="settings.html" class="">ตั้งค่า</a></nav></header>
-<main class="container"><section class="hero"><div class="avatar"><img src="assets/femboy/image1.jpg" onerror="this.style.display='none'" alt="Femboy companion"></div><div><div class="eyebrow">SMART COMPANION · DAILY SUPPORT</div><h1>เคะน้อย แฟนเด็กของนัตตี้ 💕</h1><p>พื้นที่เล็ก ๆ สำหรับดูแลตัวเอง จัดตาราง ออกกำลังกาย และเก็บผลงาน IT — ทำให้ทุกวันมีความคืบหน้า แม้เพียง 1% ก็ยังนับนะ</p><div class="chat-shell"><div class="chat-head"><div><b>💬 แชทส่วนตัวกับเคะ</b><small id="chatStatus">ออนไลน์ · พร้อมคุย</small></div><span class="chat-online">●</span></div><div id="chatMessages" class="chat-messages" aria-live="polite"></div><div class="chat-quick"><button class="chat-chip" onclick="sendQuick('อ้อนหน่อย 🥺')">🥺 อ้อนหน่อย</button><button class="chat-chip" onclick="sendQuick('วันนี้เหนื่อยมาก')">🫂 วันนี้เหนื่อย</button><button class="chat-chip" onclick="sendQuick('ช่วยปลุกไฟทำงานหน่อย')">🔥 ปลุกไฟ</button><button class="chat-chip" onclick="sendQuick('ส่งรูปให้หน่อย')">📸 ส่งรูป</button></div><form class="chat-composer" onsubmit="sendChat(event)"><input id="chatInput" class="input" autocomplete="off" placeholder="พิมพ์คุยกับเคะได้เลย..."><button class="btn" type="submit">ส่ง 💕</button></form></div></div></section><section class="card"><div class="cardhead"><div class="title"><i class="fa-solid fa-chart-line"></i> ภาพรวมวันนี้</div></div><div class="grid3"><div class="stat"><span>สถานะ BMI</span><strong id="dashBmi">ยังไม่ได้คำนวณ</strong><small id="dashBmiStatus" class="sub">ไปที่หน้าคำนวณเพื่อเริ่ม</small></div><div class="stat"><span>ออกกำลังกายวันนี้</span><strong id="dashWorkout">0 / 4 ท่า</strong><small class="sub">ทำทีละท่า ไม่ต้องรีบ</small></div><div class="stat"><span>นัดหมายวันนี้</span><strong id="todayNote" style="font-size:1rem">ไม่มีนัดหมาย (ว่าง)</strong></div></div></section>
-<section class="card"><div class="cardhead"><div class="title"><i class="fa-solid fa-clock-rotate-left"></i> ประวัติแชท 💌</div><button class="btn danger" onclick="clearChat()">ล้างประวัติ</button></div><div id="chatHistory" class="list"></div></section></main><div id="toast" class="toast"></div><footer>NUTT Smart Companion · ข้อมูลทั้งหมดเก็บในเบราว์เซอร์ของคุณ 💕</footer><script src="app.js"></script><script src="companion-v5.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบฝากงาน</title>
+
+    <link rel="icon" href="https://media.discordapp.net/attachments/1283550912240943116/1286293143519625227/a1b95347-2363-4d8b-8dfe-e79787d846a4.gif?ex=6ad8a6d7&is=6ad75557&hm=3d7dd724463a35afce4d33c53e72dd2d299f7e0543887787bde2542167133c56&=&width=384&height=384" type="image/png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cn-red: #9e2a2b;
+            --cn-red-hover: #781f20;
+            --cn-gold: #d4af37;
+            --cn-gold-light: #f3e5ab;
+            --cn-dark: #1a0f0f;
+            --cn-bg: #faf6f0;
+            --card-bg: #ffffff;
+            --border-gold: #c5a059;
+            --shadow: 0 10px 30px rgba(158, 42, 43, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        body {
+            background-color: var(--cn-bg);
+            background-image: radial-gradient(var(--border-gold) 0.75px, transparent 0.75px);
+            background-size: 20px 20px;
+            font-family: 'Sarabun', sans-serif;
+            margin: 0;
+            padding: 40px 20px;
+            color: var(--cn-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 550px;
+            text-align: center;
+        }
+
+        .hero-container {
+            position: relative;
+            margin-bottom: 25px;
+            border-radius: 16px;
+            padding: 8px;
+            background: linear-gradient(135deg, var(--cn-gold), var(--cn-red));
+            box-shadow: var(--shadow);
+        }
+
+        .hero-img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            display: block;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            padding: 35px 30px;
+            border: 2px solid var(--border-gold);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* ลวดลายมุมกรอบแบบจีน */
+        .card::before {
+            content: '卍';
+            position: absolute;
+            top: 8px;
+            left: 12px;
+            color: var(--cn-gold);
+            font-size: 18px;
+        }
+        .card::after {
+            content: '卍';
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            color: var(--cn-gold);
+            font-size: 18px;
+        }
+
+        .card-icon {
+            width: 70px;
+            height: auto;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+        }
+
+        .card-title {
+            color: var(--cn-red);
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0 0 8px 0;
+            letter-spacing: 0.5px;
+        }
+
+        .card-subtitle {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 25px;
+            display: block;
+        }
+
+        .btn-cn {
+            background: linear-gradient(135deg, var(--cn-red), #be3a3c);
+            color: var(--cn-gold-light);
+            border: 1px solid var(--cn-gold);
+            padding: 14px 28px;
+            width: 100%;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(158, 42, 43, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-cn:hover {
+            background: linear-gradient(135deg, var(--cn-red-hover), var(--cn-red));
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(158, 42, 43, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="hero-container">
+            <img src="https://i.pinimg.com/1200x/56/21/b3/5621b33d530b2bb2437d61f404538c81.jpg" alt="ภาพปกท่องเที่ยว" class="hero-img">
+        </div>
+
+        <div class="card">
+            <img src="https://i.pinimg.com/originals/93/92/a8/9392a8260981239f178540ad8b20a51e.gif" class="card-icon" alt="ระบบท่องเที่ยว">
+            
+            <h1 class="card-title">ศูนย์รวมระบบงานที่ฝาก</h1>
+            <span class="card-subtitle">ยินดีต้อนรับเข้าสู่ระบบศูนย์รวมระบบงานที่ฝาก</span>
+            
+            <form action="about.html">
+                <button type="submit" class="btn-cn">
+                    <span>เข้าสู่ระบบข้อมูล</span> 🧧
+                </button>
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>

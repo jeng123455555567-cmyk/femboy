@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ศูนย์รวมระบบงานและ Add-on ที่ฝาก</title>
+
+    <link rel="icon" href="https://media.discordapp.net/attachments/1283550912240943116/1286293143519625227/a1b95347-2363-4d8b-8dfe-e79787d846a4.gif?ex=6ad8a6d7&is=6ad75557&hm=3d7dd724463a35afce4d33c53e72dd2d299f7e0543887787bde2542167133c56&=&width=384&height=384" type="image/png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cn-red: #9e2a2b;
+            --cn-red-light: #be3a3c;
+            --cn-gold: #c5a059;
+            --cn-gold-light: #fefae0;
+            --cn-dark: #2b1e1e;
+            --bg-color: #faf6f0;
+            --card-bg: #ffffff;
+            --border-color: #e6d7c3;
+            --shadow: 0 4px 15px rgba(0,0,0,0.06);
+            --shadow-hover: 0 10px 25px rgba(158, 42, 43, 0.15);
+            --badge-new: #d90429;
+        }
+
+        * {
+            box-sizing: border-box;
+            transition: all 0.25s ease;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            font-family: 'Sarabun', sans-serif;
+            margin: 0;
+            padding: 40px 20px;
+            color: var(--cn-dark);
+            scroll-behavior: smooth;
+        }
+
+        .main-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* --- Header Section --- */
+        .header-section {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 25px auto;
+        }
+
+        .header-icon {
+            width: 65px;
+            height: auto;
+            margin-bottom: 12px;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+        }
+
+        .main-title {
+            color: var(--cn-red);
+            font-size: 32px;
+            font-weight: 700;
+            margin: 0 0 8px 0;
+            letter-spacing: -0.5px;
+        }
+
+        .main-subtitle {
+            color: #666;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        /* --- Creator Info Card --- */
+        .creator-card {
+            background-color: var(--card-bg);
+            max-width: 500px;
+            margin: 0 auto 40px auto;
+            padding: 30px;
+            border: 2px solid var(--cn-gold);
+            border-radius: 18px;
+            box-shadow: var(--shadow-hover);
+            text-align: center;
+        }
+
+        .creator-icon {
+            width: 60px;
+            height: auto;
+            margin-bottom: 10px;
+        }
+
+        .creator-title {
+            color: var(--cn-red);
+            font-size: 22px;
+            font-weight: 700;
+            margin: 0 0 15px 0;
+            padding-bottom: 8px;
+            border-bottom: 2px dashed var(--cn-gold);
+        }
+
+        .info-group {
+            text-align: left;
+            margin-bottom: 20px;
+            font-size: 15px;
+            line-height: 1.8;
+        }
+
+        .info-label {
+            font-weight: 700;
+            color: var(--cn-red);
+        }
+
+        .info-link {
+            color: #b91c1c;
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .info-link:hover {
+            text-decoration: underline;
+        }
+
+        .btn-cn {
+            background: linear-gradient(135deg, var(--cn-red), var(--cn-red-light));
+            color: var(--cn-gold-light);
+            border: 1px solid var(--cn-gold);
+            padding: 10px;
+            width: 100%;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(158, 42, 43, 0.2);
+        }
+
+        .btn-cn:hover {
+            background: var(--cn-dark);
+            color: var(--cn-gold);
+            transform: translateY(-2px);
+        }
+
+        /* --- Filter & Search Section --- */
+        .filter-section {
+            margin: 0 auto 35px auto;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            align-items: center;
+        }
+
+        .search-box {
+            position: relative;
+            width: 100%;
+            max-width: 550px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 14px 24px;
+            font-size: 15px;
+            font-family: 'Sarabun', sans-serif;
+            border: 2px solid var(--border-color);
+            border-radius: 30px;
+            outline: none;
+            background-color: #ffffff;
+            box-shadow: var(--shadow);
+        }
+
+        .search-input:focus {
+            border-color: var(--cn-red);
+            box-shadow: 0 6px 20px rgba(158, 42, 43, 0.12);
+        }
+
+        /* --- Section Container --- */
+        .section-container {
+            margin-bottom: 40px;
+            background-color: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(8px);
+            padding: 28px;
+            border-radius: 18px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 22px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--cn-gold);
+        }
+
+        .category-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .category-icon {
+            width: 34px;
+            height: 34px;
+            object-fit: contain;
+        }
+
+        .category-title {
+            color: var(--cn-red);
+            font-size: 22px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .section-badge {
+            background-color: var(--cn-gold-light);
+            color: var(--cn-dark);
+            border: 1px solid var(--cn-gold);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* --- Cards Grid --- */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 22px;
+            margin-bottom: 22px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 14px;
+            box-shadow: var(--shadow);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--cn-gold);
+        }
+
+        .badge-new {
+            position: absolute;
+            top: 22px;
+            right: 22px;
+            background-color: var(--badge-new);
+            color: #ffffff;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 9px;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(217, 4, 41, 0.4);
+            z-index: 2;
+            letter-spacing: 0.5px;
+        }
+
+        /* --- Addon Type Badges Style --- */
+        .type-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            font-size: 11px;
+            font-weight: 700;
+            border-radius: 6px;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+        .type-bp {
+            background-color: #e67e22; /* สีส้มสำหรับ Behavior Pack */
+            color: #ffffff;
+        }
+        .type-rp {
+            background-color: #2980b9; /* สีฟ้าสำหรับ Resource Pack */
+            color: #ffffff;
+        }
+        .type-bprp {
+            background-color: #27ae60; /* สีเขียวสำหรับ BP + RP */
+            color: #ffffff;
+        }
+        .type-website {
+            background-color: #8e44ad;
+            color: #ffffff;
+        }
+
+        .img-wrapper {
+            width: 100%;
+            height: 140px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 12px;
+            position: relative;
+            background-color: #f0e9df;
+            display: block;
+        }
+
+        .card-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .card:hover .card-img {
+            transform: scale(1.08);
+        }
+
+        .card-title {
+            color: var(--cn-red);
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            display: block;
+            text-decoration: none;
+            line-height: 1.4;
+        }
+
+        .card-desc {
+            color: #555;
+            font-size: 13px;
+            line-height: 1.5;
+            flex-grow: 1;
+        }
+
+        .no-results {
+            text-align: center;
+            font-size: 16px;
+            color: #777;
+            padding: 40px 20px;
+            background-color: #ffffff;
+            border-radius: 16px;
+            margin: 0 auto;
+            border: 1px dashed var(--border-color);
+            display: none;
+        }
+
+        /* --- Scroll to Top Button Style --- */
+        .scrollToTopBtn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, var(--cn-red), var(--cn-red-light));
+            color: var(--cn-gold-light);
+            border: 2px solid var(--cn-gold);
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(158, 42, 43, 0.3);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+
+        .scrollToTopBtn.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .scrollToTopBtn:hover {
+            background: var(--cn-dark);
+            color: var(--cn-gold);
+            transform: translateY(-4px);
+        }
+
+        /* --- Modal Pop-up (ตามตัวอย่างในภาพ) --- */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: var(--card-bg);
+            border: 2px solid var(--cn-gold);
+            border-radius: 18px;
+            max-width: 480px;
+            width: 100%;
+            padding: 24px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            text-align: center;
+            animation: modalPopup 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes modalPopup {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--cn-red);
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            color: var(--cn-dark);
+        }
+
+        .modal-img-wrapper {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 15px auto;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid var(--cn-gold);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+
+        .modal-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .modal-badge {
+            display: inline-block;
+            background-color: var(--badge-new);
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+
+        .modal-title {
+            color: var(--cn-red);
+            font-size: 22px;
+            font-weight: 700;
+            margin: 0 0 8px 0;
+        }
+
+        .modal-desc {
+            color: #555;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .modal-detail-box {
+            background-color: var(--bg-color);
+            border: 1px dashed var(--border-color);
+            border-radius: 10px;
+            padding: 14px;
+            text-align: left;
+            font-size: 13.5px;
+            color: #333;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .modal-btn-link {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--cn-red), var(--cn-red-light));
+            color: #ffffff !important;
+            padding: 8px 20px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            border: 1px solid var(--cn-gold);
+        }
+
+        .modal-btn-link:hover {
+            background: var(--cn-dark);
+            color: var(--cn-gold) !important;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 12px;
+            }
+            .main-title {
+                font-size: 25px;
+            }
+            .section-container {
+                padding: 18px;
+            }
+            .cards-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                gap: 14px;
+            }
+            .img-wrapper {
+                height: 110px;
+            }
+            .scrollToTopBtn {
+                bottom: 20px;
+                right: 20px;
+                width: 42px;
+                height: 42px;
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ปุ่มเลื่อนขึ้นด้านบนสุด -->
+    <button type="button" id="scrollToTopBtn" class="scrollToTopBtn" onclick="scrollToTop()" title="เลื่อนขึ้นด้านบน">▲</button>
+
+    <div class="main-wrapper">
+
+        <!-- Header -->
+        <div class="header-section">
+            <img src="https://i.pinimg.com/originals/31/13/22/31132288733f70e7c05d10bc3a104f59.gif" alt="Star Icon" class="header-icon"><br>
+            <h1 class="main-title">ศูนย์รวมระบบงานและ Add-on ที่ฝาก</h1>
+            <span class="main-subtitle">รวบรวมระบบงาน เว็บไซต์ และ Add-on ล่าสุดที่นำมาลงใหม่และรายการทั้งหมด</span>
+        </div>
+
+        <!-- ข้อมูลผู้จัดทำ -->
+        <div class="creator-card">
+            <img src="https://i.pinimg.com/originals/e1/a3/11/e1a311b494e0e5b9c19fffeae33e395a.gif" class="creator-icon" alt="Cat Icon">
+            <h1 class="creator-title">ข้อมูลผู้จัดทำเว็บไซต์</h1>
+        
+            <div class="info-group">
+                <p><span class="info-label">ชื่อผู้จัดทำ:</span> Nuttsumechan</p>
+                <p><span class="info-label">อัพเดทล่าสุดวันที่:</span> 20/10/2569</p>
+                <p><span class="info-label"> © :</span> ประกาศลิขสิทธิ์ / Copyright Notice: ระบบ โค้ด และไฟล์ผลงานทั้งหมด ได้รับการคุ้มครองตาม พ.ศ. 2537 โดย © 2026 Nuttsumechan ห้ามมิให้ทำการคัดลอก ดัดแปลง แก้ไข หรือแจกจ่ายโดยมิได้รับอนุญาต</p>
+                <p><span class="info-label">ข้อกฎหมาย:</span> <a href="momo.html" class="info-link">ข้อกฎหมายกรณีละเมิดและแงะดัดแปลงไฟล์ Add-On</a></p>
+            </div>
+
+            <form action="about.html">
+                <button type="submit" class="btn-cn">← ย้อนกลับ</button>
+            </form>
+        </div>
+
+        <!-- ส่วนค้นหาและกรองหมวดหมู่ -->
+        <div class="filter-section">
+            <div class="search-box">
+                <input type="text" id="searchInput" class="search-input" placeholder="🔍 ค้นหารายการลงใหม่ (ชื่อระบบ หรือ Add-on)..." onkeyup="filterItems()">
+            </div>
+        </div>
+
+        <div id="noResults" class="no-results">ไม่พบข้อมูลระบบหรือ Add-on ที่ลงใหม่ตรงตามคำค้นหา</div>
+
+        <!-- 3: Add-on ที่ทำเอง -->
+        <div class="section-container" data-category="addonntt">
+            <div class="category-header">
+                <div class="category-header-left">
+                    <img src="https://i.pinimg.com/originals/ec/c3/fa/ecc3fad4fbe9d33d0c1b1b76102396b5.gif" class="category-icon" alt="Add-on NTT">
+                    <h2 class="category-title">Add-on ที่ทำเอง</h2>
+                </div>
+                <span class="section-badge">New Arrivals</span>
+            </div>
+            
+            <div class="cards-grid">
+                
+                <!-- 1. คริสต์มาส (BP + RP) -->
+                <div class="card" onclick="openGeneralModal('🎄✨ สุขสันต์วันคิดมาก [ คริสต์มาส ] ! ✨🎄', 'เวอร์ชั่น V.0.1', 'แจก Add-on ชุดพิเศษให้ทุกคน', 'https://i.pinimg.com/1200x/69/fb/eb/69fbeb4542399b06f9435d54ce6d7c9e.jpg', 'ในโอกาสพิเศษนี้ เรามีความยินดีที่จะ แจก Add-on ชุดพิเศษ ให้ทุกคน! 🥳 Add-on ชุดนี้เป็นผลรวมของหลายแหล่ง ที่เราตั้งใจรวบรวมและปรับแต่งขึ้นเพื่อให้คุณได้สนุก', 'https://www.mediafire.com/file/0drwoai6sf3dt6l/%25E0%25B8%25AA%25E0%25B8%25B8%25E0%25B8%2582%25E0%25B8%25AA%25E0%25B8%25B1%25E0%25B8%2595%25E0%25B8%2595%25E0%25B9%258*B8%25A1%25E0%25B8%25B1%25E0%25B8%2599%25E0%25B8%2584%25E0%25B8%25B4%25E0%25B8%2594%25E0%25B8%25A1%25E0%25B8%25B1%25E0%25B8%2581_%255D.mcaddon/file', 'ดาวน์โหลด ➔')">
+                    <span class="badge-new">เวอร์ชั่น V.0.1</span>
+                    <div class="img-wrapper">
+                        <img src="https://i.pinimg.com/1200x/69/fb/eb/69fbeb4542399b06f9435d54ce6d7c9e.jpg" alt="คริสต์มาส" class="card-img" onerror="this.src='https://placehold.co/400x250/9e2a2b/ffffff?text=Addon+NTT'">
+                    </div>
+                    <div><span class="type-badge type-bprp">BP & RP Complete</span></div>
+                    <b class="card-title">🎄✨ สุขสันต์วันคิดมาก [ คริสต์มาส ] ! ✨🎄</b>
+                    <span class="card-desc">ในโอกาสพิเศษนี้ เรามีความยินดีที่จะ แจก Add-on ชุดพิเศษ ให้ทุกคน! 🥳 Add-on ชุดนี้เป็นผลรวมของหลายแหล่ง...</span>
+                </div>
+
+                <!-- 2. Auto Refill System (Behavior Pack) -->
+                <div class="card" onclick="openGeneralModal('Addon Auto Refill System', 'เวอร์ชั่น V.0.1', 'ส่วนเสริม เอาไว้เล่นเอาชีวิตรอด', 'https://i.pinimg.com/736x/56/6a/07/566a07c7a9727ade029e5d9b07cedd2e.jpg', 'ส่วนเสริม เอาไว้เล่นถ้าชีวิตรอดในเฟซทั่วไปได้', 'https://www.mediafire.com/file/zl6wmfotztuz5nn/Auto_Refill_System.mcaddon/file', 'ดาวน์โหลด ➔')">
+                    <span class="badge-new">เวอร์ชั่น V.0.1</span>
+                    <div class="img-wrapper">
+                        <img src="https://i.pinimg.com/736x/56/6a/07/566a07c7a9727ade029e5d9b07cedd2e.jpg" alt="Auto Refill System" class="card-img" onerror="this.src='https://placehold.co/400x250/9e2a2b/ffffff?text=Addon+NTT'">
+                    </div>
+                    <div><span class="type-badge type-rp">Behavior Pack</span></div>
+                    <b class="card-title">Addon Auto Refill System </b>
+                    <span class="card-desc">ส่วนเสริม เอาไว้เล่นถ้าชีวิตรอดในเฟซทั่วไปได้</span>
+                </div>
+
+                <!-- 3. ปิดชื่อเข้าออก (Resource Pack) -->
+                <div class="card" onclick="openGeneralModal('Add-on ปิดชื่อเข้าออกและเปลี่ยนสกิน/นอน/ตาย', 'เวอร์ชั่น V.0.1', 'รีซอสแพคทำให้ข้อความโปร่งใส', 'https://i.pinimg.com/736x/4a/2f/50/4a2f50eb549cac57f6d20db0b1cf2664.jpg', 'ดังนั้นทางเราขอภูมิใจเสนอ yellow_text รีซอสแพคที่จะทำให้ข้อความเวลามีผู้เล่นเข้าออกเกมฯลฯ โปร่งใส~ ~ ~ ~', 'https://www.mediafire.com/file/at0thovubmaw6rw/Text.mcpack/file', 'ดาวน์โหลด ➔')">
+                    <span class="badge-new">เวอร์ชั่น V.0.1</span>
+                    <div class="img-wrapper">
+                        <img src="https://i.pinimg.com/736x/4a/2f/50/4a2f50eb549cac57f6d20db0b1cf2664.jpg" alt="ปิดชื่อเข้าออก" class="card-img" onerror="this.src='https://placehold.co/400x250/9e2a2b/ffffff?text=Addon+NTT'">
+                    </div>
+                    <div><span class="type-badge type-bp">Resource Pack</span></div>
+                    <b class="card-title">Add-on ปิดชื่อเข้าออกและเปลี่ยนสกิน/นอน/ตาย</b>
+                    <span class="card-desc">ดังนั้นทางเราขอภูมิใจเสนอ yellow_text รีซอสแพคที่จะทำให้ข้อความเวลามีผู้เล่นเข้าออกเกม...</span>
+                </div>
+
+                <!-- 4. อุ้มแมว (BP + RP) -->
+                <div class="card" onclick="openGeneralModal('Add-on อุ้มแมว', 'เวอร์ชั่น V.0.1', 'แจก addon อุ้มแมว', 'https://i.pinimg.com/736x/68/dc/ed/68dced58fca04d5b4b757db3cf9fc873.jpg', 'แจก addon อุ้มแมว ( เล่นแล้วเป็นไงฝากมาบอกกันด้วยนะหรือทำคลิปบอกกันก็ได้ )', 'https://www.mediafire.com/file/k27wzagpswljnre/A_cat_that_can_ride_players.mcaddon/file', 'ดาวน์โหลด ➔')">
+                    <span class="badge-new">เวอร์ชั่น V.0.1</span>
+                    <div class="img-wrapper">
+                        <img src="https://i.pinimg.com/736x/68/dc/ed/68dced58fca04d5b4b757db3cf9fc873.jpg" alt="อุ้มแมว" class="card-img" onerror="this.src='https://placehold.co/400x250/9e2a2b/ffffff?text=Addon+NTT'">
+                    </div>
+                    <div><span class="type-badge type-bprp">BP & RP Complete</span></div>
+                    <b class="card-title">Add-on อุ้มแมว</b>
+                    <span class="card-desc">แจก addon อุ้มแมว ( เล่นแล้วเป็นไงฝากมาบอกกันด้วยนะหรือทำคลิปบอกกันก็ได้ ) </span>
+                </div>
+
+                <!-- 5. K-Crafting System (Behavior Pack) -->
+                <div class="card" onclick="openGeneralModal('Add-on K-Crafting System', 'เวอร์ชั่น V.1.2', 'ส่วนเสริม Add-on ใช้กล่องคราฟของแบบ setting เองได้', 'https://i.pinimg.com/736x/ea/82/d6/ea82d64c3163f26bdb47bd74b1226995.jpg', 'ระบบกล่องคราฟต์ไอเทมที่ผู้ดูแลสามารถตั้งค่าสูตรการคราฟต์และไอเทมที่ต้องการผ่านไฟล์ Config ได้ด้วยตนเอง', 'https://www.mediafire.com/file/9lbpg7bgnn22ln3/Add-on_%25E0%25B9%2583%25E0%25B8%2588%25E0%25B9%2588%25E0%25B8%2581%25E0%25B8%25A5%25E0%25B8%258F%25E0%25B8%2584%25E0%25B8%25A3%25E0%25B8%25B2%25E0%25B8%259F%25E0%25B8%2582%25E0%25B8%25AD%25E0%25B8%2587%25E0%25B9%2581%25E0%25B8%259A%25E0%25B8%259A_setting_%25E0%25B9%2580%25E0%25B8%25AD%25E0%25B8%2587%25E0%25B9%2584%25E0%25B8%2594%25E0%25B9%2589.mcaddon/file', 'ดาวน์โหลด ➔')">
+                    <span class="badge-new">เวอร์ชั่น V.1.2</span>
+                    <div class="img-wrapper">
+                        <img src="https://i.pinimg.com/736x/ea/82/d6/ea82d64c3163f26bdb47bd74b1226995.jpg" alt="K-Crafting System" class="card-img" onerror="this.src='https://placehold.co/400x250/9e2a2b/ffffff?text=Addon+NTT'">
+                    </div>
+                    <div><span class="type-badge type-rp">Behavior Pack</span></div>
+                    <b class="card-title">Add-on K-Crafting System</b>
+                    <span class="card-desc">ส่วนเสริม Add-on ใช้กล่องคราฟของแบบ setting เองได้</span>
+                </div>
+
+                <!-- 6. ของสวมใส่แบบเล่นๆ V.1 (Behavior Pack) -->
+                <div class="card" onclick="openGeneralModal('Add-on ของสวมใส่แบบเล่นๆจำไม่ได้ว่ามีอะไรบ้าง V.1', 'เวอร์ชั่น V.0.1', 'ของสวมใส่แบบเล่นๆ V.1', 'https://i.pinimg.com/736x/fa/28/39/fa28396351c7310cccd5939493d3aa61.jpg', 'ของสวมใส่แบบเล่นๆจำไม่ได้ว่ามีอะไรบ้าง V.1', 'https://www.mediafire.com/file/h7zm4vt0u5ygav4/%25E0%25B8%2582%25E0%25B8%25AD%25E0%25B8%2587%25E0%25B8%25AA%25E0%25B8%25A5%25E0%25B8%25A5%25E0%25B9%2583%25E0%25B8%25AA%25E0%25B9%2588%25E0%25B9%2581%25E0%25B8%259A%25E0%25B8%259A%25E0%25B9%2580%25E0%25B8%25A1%25E0%25B8%25A5%25E0%25B9%2588%25E0%25B8%2599%25E0%25B9%2586%25E0%25B8%2588%25E0%25B8%25B3%25E0%25B9%2584%25E0%25B8%25A1%25E0%25B9%2588%25E0%25B9%2584%25E0%25B8%2599%25E0%25B9%2588%25E0%25B8%25A8%25E0%25B9%2588%25E0%25B8%25B1%25E0%25B8%25B0%25E0%25B8%25AD%25E0%25B8%25B0%25E0%25B9%2584%25E0%25B8%25A3%25E0%25B8%259A%25E0%25B9%2589%25E0%25B8%25B2%25E0%25B8%2587_V.1.mcaddon/file', 'ดาวน์โหลด ➔')">
+                    <span class="badge-new">เวอร์ชั่น V.0.1</span>
+                    <div class="img-wrapper">
+                        <img src="https://i.pinimg.com/736x/fa/28/39/fa28396351c7310cccd5939493d3aa61.jpg" alt="ของสวมใส่ V.1" class="card-img" onerror="this.src='https://placehold.co/400x250/9e2a2b/ffffff?text=Addon+NTT'">
+                    </div>
+                    <div><span class="type-badge type-rp">Behavior Pack</span></div>
+                    <b class="card-title">Add-on ของสวมใส่แบบเล่นๆจำไม่ได้ว่ามีอะไรบ้าง V.1 </b>
+                    <span class="card-desc">ของสวมใส่แบบเล่นๆจำไม่ได้ว่ามีอะไรบ้าง V.1 </span>
+                </div>
+
+                <!-- 7. ของสวมใส่แบบเล่นๆ V.2 (Behavior Pack) -->
+                <div class="card" onclick="openGeneralModal('Add-on ของสวมใส่แบบเล่นๆจำไม่ได้ว่ามีอะไรบ้าง V.2', 'เวอร์ชั่น V.0.1', 'ของสวมใส่แบบเล่นๆ V.2', 'https://i.pinimg.com/736x/fa/28/39/fa28396351c7310cccd5939493d3aa61.jpg', 'ของสวมใส่แบบเล่นๆจำไม่ได้ว่ามีอะไรบ้าง V.2', 'https://www.mediafire.com/file/0d9q8nij4iuppyl/Add-on_%25E0%25B8%2582%25E0%25B8%25AD%25E0%25B8%2587%25E0%25B8%25AA%25E0%25B8%25A5%25E0%25B8%25A5%25E0%25B9%2583%25E0%25B8%25AA%25E0%25B9%2588%25E0%25B9%2581%25E0%25B8%259A%25E0%25B8%259A%25E0%25B9%2580%25E0%25B8%25A1%25E0%25B8%25A5%25E0%25B9%2588%25E0%25B8%2599%25E0%25B9%2586%25E0%25B8%2588%25E0%25B8%25B3%25E0%25B9%2584%25E0%25B8%25A1%25E0%25B9%2588%25E0%25B9%2584%25E0%25B8%2599%25E0%25B9%2588%25E0%25B8%25A8%25E0%25B9%2588%25E0%25B8%25B1%25E0%25B8%25B0%25E0%25B8%25AD%25E0%25B8%25B0%25E0%25B9%2584%25E0%25B8%25A3%25E0%25B8%259A%25E0%25B9%2589%25E0%25B8%25B2%25E0%25B8%2587_V.2.mcaddon/file', 'ดาวน์โหลด ➔')">
+                    <span class="badge-new">เวอร์ชั่น V.0.1</span>
+                    <div class="img-wrapper">
+                        <img src="https://i.pinimg.com/736x/fa/28/39/fa28396351c7310cccd5939493d3aa61.jpg" alt="ของสวมใส่ V.2" class="card-img" onerror="this.src='https://placehold.co/400x250/9e2a2b/ffffff?text=Addon+NTT'">
+                    </div>
+                    <div><span class="type-badge type-rp">Behavior Pack</span></div>
+                    <b class="card-title">Add-on ของสวมใส่แบบเล่นๆจำไม่ได้ว่ามีอะไรบ้าง V.2 </b>
+                    <span class="card-desc">ของสวมใส่แบบเล่นๆจำไม่ได้ว่ามีอะไรบ้าง V.1 </span>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- โครงสร้าง Pop-up Modal (แสดงผลแบบในรูปภาพ) -->
+    <div id="infoModal" class="modal-overlay" onclick="closeModal(event)">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal(event)">&times;</span>
+            <div class="modal-img-wrapper">
+                <img id="modalImg" class="modal-img" src="" alt="รูปปก">
+            </div>
+            <span id="modalBadge" class="modal-badge">แท็ก</span>
+            <h3 id="modalTitle" class="modal-title">หัวข้อ</h3>
+            <p id="modalDesc" class="modal-desc">คำอธิบายย่อ</p>
+            <div id="modalDetailBox" class="modal-detail-box">รายละเอียด...</div>
+
+            <!-- ปุ่มลิงก์สำหรับรายการดาวน์โหลด -->
+            <a id="modalLinkBtn" href="#" class="modal-btn-link" target="_blank" style="display: none;">ดาวน์โหลด ➔</a>
+        </div>
+    </div>
+
+    <!-- Script ควบคุมการทำงาน -->
+    <script>
+        let selectedCategory = 'all';
+
+        function filterCategory(category, btn) {
+            selectedCategory = category;
+            
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            filterItems();
+        }
+
+        function filterItems() {
+            const searchText = document.getElementById('searchInput').value.toLowerCase().trim();
+            const sections = document.querySelectorAll('.section-container');
+            let totalVisibleCards = 0;
+
+            sections.forEach(section => {
+                const cards = section.querySelectorAll('.card');
+                let visibleCardsInSection = 0;
+
+                cards.forEach(card => {
+                    const title = card.querySelector('.card-title').textContent.toLowerCase();
+                    const desc = card.querySelector('.card-desc').textContent.toLowerCase();
+                    const matchesSearch = title.includes(searchText) || desc.includes(searchText);
+
+                    if (matchesSearch) {
+                        card.style.display = 'flex';
+                        visibleCardsInSection++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                if (visibleCardsInSection > 0) {
+                    section.style.display = 'block';
+                    totalVisibleCards += visibleCardsInSection;
+                } else {
+                    section.style.display = 'none';
+                }
+            });
+
+            const noResults = document.getElementById('noResults');
+            if (totalVisibleCards === 0) {
+                noResults.style.display = 'block';
+            } else {
+                noResults.style.display = 'none';
+            }
+        }
+
+        // ฟังก์ชันเปิด Modal Pop-up แสดงรายละเอียดผลงาน
+        function openGeneralModal(title, badge, desc, imgSrc, detail, linkUrl, btnText) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalBadge').textContent = badge;
+            document.getElementById('modalDesc').textContent = desc;
+            document.getElementById('modalImg').src = imgSrc;
+            document.getElementById('modalDetailBox').textContent = detail;
+
+            const linkBtn = document.getElementById('modalLinkBtn');
+            if (linkUrl && linkUrl !== '#' && linkUrl !== '') {
+                linkBtn.href = linkUrl;
+                linkBtn.textContent = btnText || 'ดาวน์โหลด ➔';
+                linkBtn.style.display = 'inline-block';
+            } else {
+                linkBtn.style.display = 'none';
+            }
+
+            document.getElementById('infoModal').classList.add('active');
+        }
+
+        function closeModal(event) {
+            if (event.target.classList.contains('modal-overlay') || event.target.classList.contains('modal-close')) {
+                document.getElementById('infoModal').classList.remove('active');
+            }
+        }
+
+        // จัดการแสดง/ซ่อนปุ่ม Scroll to Top และสั่งเลื่อนขึ้นบนสุด
+        const scrollToTopBtn = document.getElementById("scrollToTopBtn");
+
+        window.onscroll = function() {
+            if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+                scrollToTopBtn.classList.add("show");
+            } else {
+                scrollToTopBtn.classList.remove("show");
+            }
+        };
+
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+        }
+    </script>
+</body>
+</html>

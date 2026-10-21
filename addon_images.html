@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minecraft Addon - Multi-File Texture Viewer</title>
+
+    <link rel="icon" href="https://media.discordapp.net/attachments/1283550912240943116/1286293143519625227/a1b95347-2363-4d8b-8dfe-e79787d846a4.gif?ex=6ad8a6d7&is=6ad75557&hm=3d7dd724463a35afce4d33c53e72dd2d299f7e0543887787bde2542167133c56&=&width=384&height=384" type="image/png">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <style>
+        :root { 
+            --bg: #fdf6f0;               
+            --card: #ffffff;             
+            --text-main: #4a3e3d;        
+            --text-sub: #8a7674;         
+            --accent-pink: #ffb7b2;      
+            --accent-green: #b5e2b8;     
+            --accent-blue: #cbdcf7;
+            --border-color: #ebdcd0;     
+            --warning-bg: #fff1e6;
+            --warning-border: #f4a261;
+            --warning-text: #e76f51;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: var(--bg); 
+            color: var(--text-main); 
+            padding: 20px; 
+            margin: 0; 
+        }
+
+        .copyright-banner {
+            background: var(--warning-bg);
+            border: 2px solid var(--warning-border);
+            color: var(--warning-text);
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        .container { 
+            max-width: 1400px; 
+            margin: auto; 
+            background: var(--card); 
+            padding: 25px; 
+            border-radius: 20px; 
+            box-shadow: 0 8px 25px rgba(138, 118, 116, 0.1); 
+        }
+
+        h1 { text-align: center; margin-top: 0; color: var(--text-main); }
+        .subtitle { text-align: center; color: var(--text-sub); margin-bottom: 25px; font-size: 14px; }
+
+        .upload-zone { 
+            background: #faf6f2; 
+            padding: 30px; 
+            border-radius: 15px; 
+            border: 3px dashed var(--warning-border); 
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        input[type="file"] {
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 15px;
+        }
+
+        #status {
+            font-weight: bold;
+            margin-top: 15px;
+            color: #5c8a60;
+            font-size: 15px;
+        }
+
+        /* ส่วนจัดวางการแสดงผลรูปแบบ Grid */
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .image-card {
+            background: #ffffff;
+            border: 2px solid var(--border-color);
+            border-radius: 14px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-sizing: border-box;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+        }
+
+        /* ป้ายบอกชื่อไฟล์ Zip ต้นทาง */
+        .source-pack-tag {
+            background: var(--accent-blue);
+            color: #2c3e50;
+            font-size: 11px;
+            font-weight: bold;
+            padding: 4px 10px;
+            border-radius: 20px;
+            margin-bottom: 10px;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            text-align: center;
+        }
+
+        .img-wrapper {
+            width: 180px;
+            height: 180px;
+            border: 1px solid #ebdcd0;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* พื้นหลังหมากรุกสำหรับดูความโปร่งใสของสกิน (Transparent) */
+            background-image: linear-gradient(45deg, #f0f0f0 25%, transparent 25%, transparent 75%, #f0f0f0 75%, #f0f0f0), 
+                              linear-gradient(45deg, #f0f0f0 25%, white 25%, white 75%, #f0f0f0 75%, #f0f0f0);
+            background-size: 16px 16px;
+            background-position: 0 0, 8px 8px;
+            overflow: hidden;
+        }
+
+        .img-wrapper img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            image-rendering: pixelated; /* โชว์พิกเซลสกิน Minecraft ให้คมชัด ไม่เบลอ */
+        }
+
+        .img-info {
+            width: 100%;
+            font-size: 11px;
+            color: var(--text-main);
+            word-break: break-all;
+            text-align: left;
+            background: #fdf6f0;
+            padding: 8px;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+        
+        .path-text {
+            font-family: monospace;
+            color: #bd5959;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="copyright-banner">
+    <strong>© 2026 Nuttsumechan</strong> | สงวนลิขสิทธิ์ตามกฎหมาย ห้ามคัดลอก ดัดแปลง หรือแจกจ่ายโดยไม่ได้รับอนุญาต
+</div>
+
+<div class="container">
+    <form action="about.html">
+                <button type="submit" class="btn-cn">
+                    <span>← ย้อนกลับ</span>
+                </button>
+            </form>
+    <h1>🐰 Multi-File Texture Viewer</h1>
+    <p class="subtitle">ระบบดึงรูปภาพจากหลายไฟล์แอดออนพร้อมกัน พร้อมระบุชื่อไฟล์และที่อยู่รูปภาพชัดเจน</p>
+
+    <div class="upload-zone">
+        <h3>📂 เลือกไฟล์แอดออน (.zip / .mcaddon) พร้อมกันได้หลายๆ ไฟล์</h3>
+        <input type="file" id="filePicker" accept=".zip,.mcaddon" multiple onchange="scanMultiplePacks(this)">
+        <div id="status">สถานะ: รอไฟล์อัปโหลด... (คุณสามารถเลือกพร้อมกันได้มากกว่า 1 ไฟล์)</div>
+    </div>
+
+    <div class="image-grid" id="gallery"></div>
+</div>
+
+<script>
+async function scanMultiplePacks(input) {
+    const files = input.files;
+    const gallery = document.getElementById('gallery');
+    const statusText = document.getElementById('status');
+    
+    if (files.length === 0) return;
+
+    statusText.innerText = `⏳ กำลังสแกนแกะไฟล์แอดออนจำนวน ${files.length} ไฟล์...`;
+    gallery.innerHTML = ""; // ล้างหน้าจอเก่า
+    let totalImagesFound = 0;
+
+    // ลูปวนอ่านทีละไฟล์ที่คุณเลือกเข้ามา
+    for (let i = 0; i < files.length; i++) {
+        const currentFile = files[i];
+        const packName = currentFile.name; // เก็บชื่อไฟล์แอดออน (เช่น RP.zip หรือ textures.zip)
+
+        try {
+            const zip = await JSZip.loadAsync(currentFile);
+
+            for (let [path, entry] of Object.entries(zip.files)) {
+                // กรองเอาเฉพาะไฟล์ภาพ .png ที่ไม่ใช่โฟลเดอร์เปล่า
+                if (!entry.dir && path.toLowerCase().endsWith('.png')) {
+                    totalImagesFound++;
+                    
+                    const blob = await entry.async("blob");
+                    const imgUrl = URL.createObjectURL(blob);
+
+                    // สร้างการ์ดแสดงรูปภาพ
+                    const card = document.createElement('div');
+                    card.className = 'image-card';
+                    card.innerHTML = `
+                        <div class="source-pack-tag" title="${packName}">📦 จากไฟล์: ${packName}</div>
+                        
+                        <div class="img-wrapper">
+                            <img src="${imgUrl}" alt="Minecraft Addon Texture">
+                        </div>
+                        
+                        <div class="img-info">
+                            <strong>ที่อยู่รูปในไฟล์:</strong><br>
+                            <span class="path-text">${path}</span>
+                        </div>
+                    `;
+                    gallery.appendChild(card);
+                }
+            }
+        } catch (err) {
+            console.error(`เกิดข้อผิดพลาดกับไฟล์: ${packName}`, err);
+            // แสดงการ์ดแจ้งเตือนว่าไฟล์นี้พัง แยกต่างหาก
+            const errorCard = document.createElement('div');
+            errorCard.className = 'image-card';
+            errorCard.style.borderColor = 'var(--warning-border)';
+            errorCard.innerHTML = `<b style="color:var(--warning-text)">💥 ไฟล์นี้แกะไม่ได้:</b><br><span style="font-size:11px">${packName}</span>`;
+            gallery.appendChild(errorCard);
+        }
+    }
+
+    if (totalImagesFound === 0) {
+        statusText.innerText = "❌ สแกนเสร็จสิ้น แต่ไม่พบไฟล์รูปภาพ (.png) ในทุกไฟล์ที่เลือกมาเลยครับ";
+    } else {
+        statusText.innerText = `✨ ทำงานเสร็จสิ้น! ดึงรูปภาพจากทั้งหมด ${files.length} แอดออน ออกมาแสดงผลได้รวม ${totalImagesFound} รูปภาพ`;
+    }
+}
+</script>
+
+</body>
+</html>
